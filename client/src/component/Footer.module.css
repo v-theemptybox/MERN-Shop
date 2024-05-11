@@ -1,0 +1,16 @@
+.flex-footer {
+  color: whitesmoke;
+  display: flex;
+  justify-content: space-between;
+  font-style: italic;
+}
+.flex-footer h3 {
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+.flex-footer a {
+  line-height: 1.5;
+  display: block;
+  text-decoration: none;
+  color: whitesmoke;
+}

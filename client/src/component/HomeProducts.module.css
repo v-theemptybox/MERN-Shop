@@ -1,0 +1,26 @@
+#homeProducts {
+  margin: 12px 0;
+  font-style: italic;
+  padding: 24px;
+}
+#homeProducts p {
+  margin: 0;
+}
+
+.grid-products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto;
+  column-gap: 24px;
+  row-gap: 48px;
+  text-align: center;
+}
+
+.grid-products div {
+  margin: 24px 0;
+}
+
+.grid-products img:hover {
+  filter: opacity(0.7);
+  cursor: pointer;
+}

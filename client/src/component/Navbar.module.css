@@ -1,0 +1,28 @@
+.navbar {
+  margin: 12px 0;
+  display: flex;
+  justify-content: space-between;
+}
+.logo {
+  font-weight: 400;
+  font-style: italic;
+}
+.btn-nav {
+  display: flex;
+}
+.btn-nav button {
+  border: none;
+  padding: 8px;
+  background: none;
+  font-style: italic;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 4px;
+}
+.btn-nav button:hover {
+  background: lightgoldenrodyellow;
+  color: gray;
+}
+#homeBtn {
+  color: #ead48e;
+}

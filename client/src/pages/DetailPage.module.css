@@ -1,0 +1,9 @@
+#quantityProd::-webkit-outer-spin-button,
+#quantityProd::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#quantityProd[type="number"] {
+  -moz-appearance: textfield;
+}

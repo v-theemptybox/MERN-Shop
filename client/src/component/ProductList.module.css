@@ -1,0 +1,13 @@
+.animate-img {
+  animation: zoomIn 1s 1;
+}
+@keyframes zoomIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

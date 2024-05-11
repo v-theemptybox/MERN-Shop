@@ -1,0 +1,18 @@
+#banner {
+  font-style: italic;
+  display: flex;
+  background: #f4f5f9;
+  margin: inherit;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-left {
+  flex: 40%;
+}
+.flex-left h2 {
+  font-weight: 350;
+}
+.flex-left button {
+  border-radius: 0;
+  font-style: italic;
+}
