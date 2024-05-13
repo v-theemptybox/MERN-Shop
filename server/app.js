@@ -1,10 +1,31 @@
 const express = require("express");
-const app = express();
 const mongoose = require("mongoose");
+const session = require("express-session");
+const cors = require("cors");
 
 const PORT = 5000;
 const URI =
-  "mongodb+srv://vinhnvlfx23170:51gseFhFrmQaXf7v@cluster0.wriqswp.mongodb.net/techShop?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://vinhnvlfx23170:51gseFhFrmQaXf7v@cluster0.wriqswp.mongodb.net/techShop";
+
+const authRoutes = require("./routes/auth");
+
+const MongoDbStore = require("connect-mongodb-session")(session);
+
+const app = express();
+const store = new MongoDbStore({ uri: URI, collection: "sessions" });
+
+app.use(cors());
+app.use(express.json());
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
+
+app.use("/api", authRoutes);
 
 mongoose.connect(URI).then(() => {
   console.log("MongoDb Connected");
