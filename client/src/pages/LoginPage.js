@@ -1,27 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { onLogin } from "../store";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+
+  const showAlertMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  };
 
   // validate form and user
   const validateInput = () => {
-    if (!users || users.length === 0) {
-      alert("There are currently no users in the system!");
-      return false;
-    }
     if (!email || !password) {
-      alert("Please fill out all information!");
+      showAlertMessage("Please fill out all information!");
       return false;
     }
-    if (password.length <= 8) {
-      alert("Password must be more than 8 characters");
+    if (password.length < 6) {
+      showAlertMessage("Password must be more than 5 characters");
       return false;
     }
 
@@ -29,35 +35,31 @@ const LoginPage = () => {
   };
 
   // sign in handler
-  const handleSignIn = (e) => {
-    // check valid email
-    if (validateInput()) {
-      const existingUser = JSON.parse(localStorage.getItem("users")).find(
-        (user) => user.email === email && user.password === password
-      );
-
-      if (existingUser) {
-        const onLoginUser = {
-          email,
-          password,
-          fullName: existingUser.fullName,
-          userCart: existingUser.userCart || [],
-        };
-        localStorage.setItem("loginUser", JSON.stringify(onLoginUser));
-        dispatch({ type: "ON_LOGIN" });
-
-        localStorage.setItem("cart", JSON.stringify([...onLoginUser.userCart]));
-        JSON.parse(localStorage.getItem("cart")).forEach((product) => {
-          dispatch({ type: "ADD_CART", payload: product });
+  const handleSignIn = async (e) => {
+    try {
+      if (validateInput()) {
+        const response = await fetch("http://localhost:5000/api/signIn", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
         });
 
-        setEmail("");
-        setPassword("");
-        navigate("/");
-      } else {
-        alert("Please check your email and password again!");
-        return false;
+        const resData = await response.json();
+        if (response.ok) {
+          dispatch(onLogin());
+          navigate("/");
+        } else {
+          showAlertMessage(resData.message);
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -66,6 +68,12 @@ const LoginPage = () => {
       style={{ background: "url(./img-asm03/banner1.jpg)" }}
       className="w-100 min-vh-100"
     >
+      {message && (
+        <div className="z-3 position-absolute m-3 alert alert-primary">
+          <FontAwesomeIcon icon={faInfoCircle} /> &nbsp;
+          {message}
+        </div>
+      )}
       <div className="container w-25 min-vh-100 d-flex justify-content-center align-items-center bg-transparent">
         <form className="w-100 text-center bg-white border rounded shadow">
           <h3 className="fw-light fst-italic text-center my-5">Sign In</h3>

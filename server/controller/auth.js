@@ -6,7 +6,6 @@ exports.postSignUp = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    console.log(req.body);
     const salt = await bcrypt.genSalt();
 
     // if user already exists in db
@@ -74,5 +73,14 @@ exports.postSignOut = async (req, res, next) => {
   } catch (error) {
     console.error("Error in sign out:", error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+// Get session information
+exports.getSessionInfo = async (req, res, next) => {
+  if (req.session.isLoggedIn) {
+    res.status(200).json(req.session.user);
+  } else {
+    res.status(401).end();
   }
 };

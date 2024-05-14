@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [message, setMessage] = useState("");
   const [userCart, setUserCart] = useState([]);
   const [userArr, setUserArr] = useState(
     JSON.parse(localStorage.getItem("users")) || []
@@ -15,34 +19,56 @@ const RegisterPage = () => {
   // validate form
   const validateInput = () => {
     if (!email || !password || !fullName || !phone) {
-      alert("Please fill out all information!");
+      showAlertMessage("Please fill out all information!");
       return false;
     }
-    if (password.length <= 8) {
-      alert("Password must be more than 8 characters");
+    if (password.length < 6) {
+      showAlertMessage("Password must be more than 5 characters");
       return false;
     }
-    // check duplicate email
-    const existingUser = userArr.find((user) => user.email === email);
-    if (existingUser) {
-      alert("Email already exists! Please use a different email address.");
-      return false;
-    }
+
     return true;
   };
 
+  const showAlertMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  };
+
   // sign in handler
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     if (validateInput()) {
-      const newUser = { email, password, fullName, phone, userCart };
-      setUserArr([...userArr, newUser]);
-      localStorage.setItem("users", JSON.stringify([...userArr, newUser]));
-      setEmail("");
-      setPassword("");
-      setFullName("");
-      setPhone("");
-      navigate("/login");
+      try {
+        if (validateInput()) {
+          const response = await fetch("http://localhost:5000/api/signUp", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+              fullName,
+              phone,
+              address,
+              role: "customer",
+            }),
+          });
+
+          const resData = await response.json();
+          if (response.ok) {
+            navigate("/login");
+          } else {
+            showAlertMessage(resData.message);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -51,6 +77,12 @@ const RegisterPage = () => {
       style={{ background: "url(./img-asm03/banner1.jpg)" }}
       className="w-100 min-vh-100"
     >
+      {message && (
+        <div className="z-3 position-absolute m-3 alert alert-primary">
+          <FontAwesomeIcon icon={faInfoCircle} /> &nbsp;
+          {message}
+        </div>
+      )}
       <div className="container w-25 min-vh-100 d-flex justify-content-center align-items-center bg-transparent">
         <form
           className="w-100 text-center bg-white border rounded shadow"
@@ -76,7 +108,7 @@ const RegisterPage = () => {
           />
           <input
             type="password"
-            minLength="8"
+            minLength="6"
             placeholder="Password"
             className="w-75 py-3 px-2 border border-bottom-0"
             required
@@ -87,11 +119,19 @@ const RegisterPage = () => {
             type="tel"
             maxLength="10"
             placeholder="Phone"
-            className="w-75 py-3 px-2 border"
+            className="w-75 py-3 px-2 border border-bottom-0"
             required
             pattern="[0-9]{10}"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            className="w-75 py-3 px-2 border"
+            required
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
 
           <button

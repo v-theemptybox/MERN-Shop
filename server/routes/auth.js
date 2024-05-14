@@ -12,4 +12,7 @@ router.post("/signIn", authController.postSignIn);
 // Logout to the website
 router.post("/signOut", authController.postSignOut);
 
+// Get session information
+router.get("/getSession", authController.getSessionInfo);
+
 module.exports = router;

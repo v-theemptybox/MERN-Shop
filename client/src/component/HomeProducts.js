@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "./HomeProducts.module.css";
 import Popup from "./Popup";
 import { useState } from "react";
+import { showPopup, hidePopup } from "../store";
 
 const HomeProducts = ({ homeProducts }) => {
   const [prod, setProd] = useState({});
@@ -12,20 +13,20 @@ const HomeProducts = ({ homeProducts }) => {
   const dispatch = useDispatch();
 
   // dispatch SHOW_POPUP action
-  const showPopup = () => {
-    dispatch({ type: "SHOW_POPUP" });
+  const handleShowPopup = () => {
+    dispatch(showPopup());
   };
 
   // dispatch HIDE_POPUP action
-  const hidePopup = () => {
-    dispatch({ type: "HIDE_POPUP" });
+  const handleHidePopup = () => {
+    dispatch(hidePopup());
   };
 
   const togglePopup = () => {
     if (!isComponentVisible) {
-      showPopup();
+      handleShowPopup();
     } else {
-      hidePopup();
+      handleHidePopup();
     }
   };
 
@@ -36,7 +37,7 @@ const HomeProducts = ({ homeProducts }) => {
       <div className={styles["grid-products"]}>
         {homeProducts.map((product) => {
           return (
-            <div key={product._id.$oid}>
+            <div key={product._id}>
               <img
                 src={product.img1}
                 alt={product.name}

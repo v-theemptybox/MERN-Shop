@@ -8,13 +8,19 @@ const URI =
   "mongodb+srv://vinhnvlfx23170:51gseFhFrmQaXf7v@cluster0.wriqswp.mongodb.net/techShop";
 
 const authRoutes = require("./routes/auth");
+const productRoutes = require("./routes/product");
 
 const MongoDbStore = require("connect-mongodb-session")(session);
 
 const app = express();
 const store = new MongoDbStore({ uri: URI, collection: "sessions" });
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+  })
+);
 app.use(express.json());
 app.use(
   session({
@@ -26,6 +32,7 @@ app.use(
 );
 
 app.use("/api", authRoutes);
+app.use("/api", productRoutes);
 
 mongoose.connect(URI).then(() => {
   console.log("MongoDb Connected");

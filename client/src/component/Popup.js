@@ -5,17 +5,18 @@ import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { hidePopup } from "../store";
 
 const Popup = ({ prod }) => {
   const dispatch = useDispatch();
 
-  const hidePopup = () => {
-    dispatch({ type: "HIDE_POPUP" });
+  const handleHidePopup = () => {
+    dispatch(hidePopup());
   };
 
   return (
     <>
-      <div className={styles.darkBG} onClick={() => hidePopup()} />
+      <div className={styles.darkBG} onClick={() => handleHidePopup()} />
       <div className={styles.centered}>
         <div className={`${styles.modal} w-100 h-100`}>
           <div className={styles.modalContent}>
@@ -27,19 +28,19 @@ const Popup = ({ prod }) => {
               </h4>
               <p className="fw-light">{prod.short_desc}</p>
               <Link
-                to={`/detail/${prod._id.$oid}`}
+                to={`/detail/${prod._id}`}
                 state={prod}
                 className="btn btn-dark px-5 mt-3 rounded-0"
                 // if don't hidePopup() when returning HomePage from DetailPage then isComponentVisible is true
                 // then can't reading undefined product cause have not clicked on the product yet
-                onClick={() => hidePopup()}
+                onClick={() => handleHidePopup()}
               >
                 <FontAwesomeIcon icon={faCartShopping} /> View Detail
               </Link>
             </div>
             <button
               className="align-self-start border-0 bg-white"
-              onClick={() => hidePopup()}
+              onClick={() => handleHidePopup()}
             >
               &#10006;
             </button>

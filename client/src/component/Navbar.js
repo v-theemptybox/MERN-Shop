@@ -1,32 +1,55 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faUser } from "@fortawesome/free-solid-svg-icons";
+import { onLogin, onLogout } from "../store";
 
 const Navbar = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
-  const loginUser = JSON.parse(localStorage.getItem("loginUser")) ?? {};
+  const [loginUser, setLoginUser] = useState({});
 
   const navigate = useNavigate();
 
   // handle logout button
-  const handleLogout = () => {
-    dispatch({ type: "ON_LOGOUT" });
-    localStorage.removeItem("loginUser");
-    localStorage.removeItem("cart");
-    navigate("/");
-    window.location.reload();
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/signOut", {
+        method: "POST",
+        credentials: "include",
+      });
+      const resData = await response.text();
+      console.log(resData);
+      setLoginUser({});
+      dispatch(onLogout());
+      navigate("/login");
+    } catch (error) {}
   };
 
-  // check if reload page but still login
+  // Fetch user data in session
   useEffect(() => {
-    const isLoggedInLS = localStorage.getItem("loginUser") ? true : false;
-    if (isLoggedInLS && !isLoggedIn) {
-      dispatch({ type: "ON_LOGIN" });
-    }
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/getSession", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const resData = await response.json();
+          setLoginUser(resData);
+          dispatch(onLogin());
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, [dispatch, isLoggedIn]);
 
   return (
