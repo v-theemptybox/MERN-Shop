@@ -10,17 +10,13 @@ const DetailPage = () => {
   const [amount, setAmount] = useState(1);
 
   const navigate = useNavigate();
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
 
   // use useLocation() to get state pass through <Link> in react-router
   const location = useLocation();
   const product = location.state;
 
-  const dispatch = useDispatch();
-  const listCart = useSelector((state) => state.cart.listCart);
-
-  const url =
-    "https://firebasestorage.googleapis.com/v0/b/funix-subtitle.appspot.com/o/Boutique_products.json?alt=media&token=dc67a5ea-e3e0-479e-9eaf-5e01bcd09c74";
+  const url = "http://localhost:5000/api/getProducts";
 
   const fetchData = useCallback(async () => {
     const response = await fetch(url);
@@ -28,12 +24,11 @@ const DetailPage = () => {
     const resData = await response.json();
     // get related product by category
     const filteredData = resData.filter(
-      (prod) =>
-        prod._id.$oid !== product._id.$oid && prod.category === product.category
+      (prod) => prod._id !== product._id && prod.category === product.category
     );
 
     setRelatedProducts(filteredData);
-  }, [product.category, product._id.$oid]);
+  }, [product.category, product._id]);
 
   useEffect(() => {
     fetchData();
@@ -52,24 +47,30 @@ const DetailPage = () => {
   };
 
   // add logic for button "Add to cart"
-  const handleAddToCart = () => {
-    // find existing product in cartList
-    const existingProduct = listCart.find(
-      (item) => item._id.$oid === product._id.$oid
-    );
+  const handleAddToCart = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/updateCart", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: loginUser._id,
+          products: [
+            {
+              product: product._id,
+              quantity: amount,
+              totalProduct: amount * product.price,
+            },
+          ],
+        }),
+      });
 
-    // if product is found in cartList then dispatch UPDATE_CART action
-    if (existingProduct) {
-      dispatch({
-        type: "UPDATE_CART",
-        payload: { ...product, amount: existingProduct.amount + amount },
-      });
-    } else {
-      // else dispatch ADD_CART action
-      dispatch({
-        type: "ADD_CART",
-        payload: { ...product, amount },
-      });
+      const resData = await response.json();
+      console.log(resData);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -144,8 +145,8 @@ const DetailPage = () => {
 
         {relatedProducts.map((prod) => {
           return (
-            <div key={prod._id.$oid} className="col-3 text-center">
-              <Link to={`/detail/${prod._id.$oid}`} state={prod}>
+            <div key={prod._id} className="col-3 text-center">
+              <Link to={`/detail/${prod._id}`} state={prod}>
                 <img src={prod.img1} alt={prod.name} className="w-100" />
               </Link>
               <p className="fw-medium">{prod.name}</p>

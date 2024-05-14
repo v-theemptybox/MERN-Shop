@@ -52,7 +52,7 @@ const LoginPage = () => {
 
         const resData = await response.json();
         if (response.ok) {
-          dispatch(onLogin());
+          dispatch(onLogin(resData));
           navigate("/");
         } else {
           showAlertMessage(resData.message);

@@ -11,33 +11,48 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./DetailPage.module.css";
 import Banner from "../component/Banner";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const CartPage = () => {
   const users = JSON.parse(localStorage.getItem("users")) ?? [];
-  const cart = JSON.parse(localStorage.getItem("cart")) ?? [];
-  const loginUser = JSON.parse(localStorage.getItem("loginUser")) ?? {};
 
-  let listCart = useSelector((state) => state.cart.listCart);
+  const [cartProducts, setCartProducts] = useState([]);
+  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+
+  // let listCart = useSelector((state) => state.cart.listCart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // sum(total price) of listCart
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (isLoggedIn) {
+          const response = await fetch("http://localhost:5000/api/getCart", {
+            method: "GET",
+            credentials: "include",
+          });
+
+          const resData = await response.json();
+
+          setCartProducts(resData.products);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, [isLoggedIn]);
+
+  // console.log(cart);
+
+  // sum(total price) of cart
   const getTotalPrice = () => {
     let totalPrice = 0;
-    listCart.forEach((product) => {
-      totalPrice += product.price * product.amount;
+    cartProducts.forEach((product) => {
+      totalPrice += product.totalProduct;
     });
     return totalPrice.toLocaleString("vi-VN");
   };
-
-  // add new cart list to user cart
-  const updatedUsers = users.map((user) => {
-    if (user.email === loginUser.email) {
-      return { ...user, userCart: cart };
-    }
-    return user;
-  });
-  localStorage.setItem("users", JSON.stringify(updatedUsers));
 
   return (
     <div className="container">
@@ -88,24 +103,26 @@ const CartPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {listCart.map((product) => {
+                {cartProducts?.map((item) => {
                   return (
-                    <tr key={product._id.$oid} className="text-center">
+                    <tr key={item.product._id} className="text-center">
                       <td className="w-25">
                         <img
-                          src={product.img1}
-                          alt={product.name}
+                          src={item.product.img1}
+                          alt={item.product.name}
                           className="w-50"
                         />
                       </td>
 
-                      <td className="fw-medium">{product.name} </td>
-                      <td>{(+product.price).toLocaleString("vi-VN")} VND</td>
+                      <td className="fw-medium">{item.product.name} </td>
+                      <td>
+                        {(+item.product.price).toLocaleString("vi-VN")} VND
+                      </td>
                       <td>
                         <button
                           className="btn"
                           onClick={() => {
-                            if (+product.amount === 1) {
+                            if (+item.amount === 1) {
                               alert(
                                 "Quantity must be greater than 0!\nIf you don't buy this product anymore, please delete it"
                               );
@@ -113,8 +130,8 @@ const CartPage = () => {
                             dispatch({
                               type: "UPDATE_CART",
                               payload: {
-                                ...product,
-                                amount: +Math.max(1, product.amount - 1),
+                                ...item,
+                                amount: +Math.max(1, item.amount - 1),
                               },
                             });
                           }}
@@ -125,7 +142,7 @@ const CartPage = () => {
                           id={styles.quantityProd}
                           className="w-25 border-0 text-center"
                           min="1"
-                          value={product.amount}
+                          value={item.quantity}
                           onChange={(e) => {
                             parseInt(e.target.value);
                           }}
@@ -133,46 +150,18 @@ const CartPage = () => {
                             if (+e.target.value === 0) {
                               e.target.value = 1;
                             }
-                            dispatch({
-                              type: "UPDATE_CART",
-                              payload: {
-                                ...product,
-                                amount: +e.target.value,
-                              },
-                            });
                           }}
                           type="number"
                         />
-                        <button
-                          className="btn"
-                          onClick={() => {
-                            dispatch({
-                              type: "UPDATE_CART",
-                              payload: {
-                                ...product,
-                                amount: +product.amount + 1,
-                              },
-                            });
-                          }}
-                        >
+                        <button className="btn" onClick={() => {}}>
                           <FontAwesomeIcon icon={faCaretRight} />
                         </button>
                       </td>
-                      <td>
-                        {(product.price * product.amount).toLocaleString(
-                          "vi-VN"
-                        )}{" "}
-                        VND
-                      </td>
+                      <td>{item.totalProduct.toLocaleString("vi-VN")} VND</td>
                       <td>
                         <button
                           className="border-0 w-100 bg-white"
-                          onClick={() => {
-                            dispatch({
-                              type: "DELETE_CART",
-                              payload: product._id.$oid,
-                            });
-                          }}
+                          onClick={() => {}}
                         >
                           <FontAwesomeIcon icon={faTrashCan} />
                         </button>

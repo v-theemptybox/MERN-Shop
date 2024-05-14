@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import styles from "./ProductList.module.css";
-import { useEffect } from "react";
 
 const ProductList = ({ productList }) => {
   return (
@@ -19,10 +18,10 @@ const ProductList = ({ productList }) => {
         {productList.map((product) => {
           return (
             <div
-              key={product._id.$oid}
+              key={product._id}
               className={`${styles["animate-img"]} col-4 text-center`}
             >
-              <Link to={`/detail/${product._id.$oid}`} state={product}>
+              <Link to={`/detail/${product._id}`} state={product}>
                 <img src={product.img1} alt={product.name} className="w-75 " />
               </Link>
               <p className="fw-medium mb-0">{product.name}</p>
@@ -34,28 +33,21 @@ const ProductList = ({ productList }) => {
       <nav className="text-light">
         <ul className="pagination justify-content-end mb-0">
           <li className="page-item">
-            <a
+            <button
               className="page-link text-black fw-bold"
-              href="#"
               aria-label="Previous"
             >
               <span aria-hidden="true">&laquo;</span>
-            </a>
+            </button>
           </li>
           <li className="page-item">
-            <a className="page-link bg-black text-light" href="#">
-              1
-            </a>
+            <button className="page-link bg-black text-light">1</button>
           </li>
 
           <li className="page-item">
-            <a
-              className="page-link text-black fw-bold"
-              href="#"
-              aria-label="Next"
-            >
+            <button className="page-link text-black fw-bold" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
-            </a>
+            </button>
           </li>
         </ul>
         <p className="text-end text-secondary fst-italic">

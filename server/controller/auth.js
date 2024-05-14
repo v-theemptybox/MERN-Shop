@@ -78,9 +78,13 @@ exports.postSignOut = async (req, res, next) => {
 
 // Get session information
 exports.getSessionInfo = async (req, res, next) => {
-  if (req.session.isLoggedIn) {
-    res.status(200).json(req.session.user);
-  } else {
-    res.status(401).end();
+  try {
+    if (req.session.isLoggedIn) {
+      res.status(200).json(req.session.user);
+    } else {
+      res.status(401).end();
+    }
+  } catch (error) {
+    console.log(error);
   }
 };

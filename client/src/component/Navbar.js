@@ -7,10 +7,8 @@ import { faCartShopping, faUser } from "@fortawesome/free-solid-svg-icons";
 import { onLogin, onLogout } from "../store";
 
 const Navbar = () => {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [loginUser, setLoginUser] = useState({});
-
   const navigate = useNavigate();
 
   // handle logout button
@@ -22,7 +20,6 @@ const Navbar = () => {
       });
       const resData = await response.text();
       console.log(resData);
-      setLoginUser({});
       dispatch(onLogout());
       navigate("/login");
     } catch (error) {}
@@ -42,8 +39,7 @@ const Navbar = () => {
 
         if (response.ok) {
           const resData = await response.json();
-          setLoginUser(resData);
-          dispatch(onLogin());
+          dispatch(onLogin(resData));
         }
       } catch (error) {
         console.log(error);
