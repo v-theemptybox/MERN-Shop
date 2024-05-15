@@ -14,13 +14,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const CartPage = () => {
-  const users = JSON.parse(localStorage.getItem("users")) ?? [];
-
   const [cartProducts, setCartProducts] = useState([]);
+  const [updateView, setUpdateView] = useState(false);
+
   const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
 
-  // let listCart = useSelector((state) => state.cart.listCart);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +31,6 @@ const CartPage = () => {
           });
 
           const resData = await response.json();
-
           setCartProducts(resData.products);
         }
       } catch (err) {
@@ -41,17 +38,40 @@ const CartPage = () => {
       }
     };
     fetchData();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, updateView]);
 
-  // console.log(cart);
+  const handleRemoveProduct = async (productId) => {
+    try {
+      if (isLoggedIn) {
+        const response = await fetch(
+          "http://localhost:5000/api/removeFromCart",
+          {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user: loginUser._id,
+              productId,
+            }),
+          }
+        );
+
+        const resData = await response.json();
+        setCartProducts(resData.cart.products);
+        setUpdateView((prev) => !prev);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // sum(total price) of cart
   const getTotalPrice = () => {
-    let totalPrice = 0;
-    cartProducts.forEach((product) => {
-      totalPrice += product.totalProduct;
-    });
-    return totalPrice.toLocaleString("vi-VN");
+    return cartProducts
+      .reduce((total, product) => total + product.totalProduct, 0)
+      .toLocaleString("vi-VN");
   };
 
   return (
@@ -122,18 +142,19 @@ const CartPage = () => {
                         <button
                           className="btn"
                           onClick={() => {
-                            if (+item.amount === 1) {
+                            if (item.quantity === 1) {
                               alert(
                                 "Quantity must be greater than 0!\nIf you don't buy this product anymore, please delete it"
                               );
+                            } else {
+                              setCartProducts(
+                                cartProducts.map((p) =>
+                                  p.product._id === item.product._id
+                                    ? { ...p, quantity: p.quantity - 1 }
+                                    : p
+                                )
+                              );
                             }
-                            dispatch({
-                              type: "UPDATE_CART",
-                              payload: {
-                                ...item,
-                                amount: +Math.max(1, item.amount - 1),
-                              },
-                            });
                           }}
                         >
                           <FontAwesomeIcon icon={faCaretLeft} />
@@ -144,16 +165,40 @@ const CartPage = () => {
                           min="1"
                           value={item.quantity}
                           onChange={(e) => {
-                            parseInt(e.target.value);
+                            setCartProducts(
+                              cartProducts.map((p) =>
+                                p.product._id === item.product._id
+                                  ? { ...p, quantity: parseInt(e.target.value) }
+                                  : p
+                              )
+                            );
                           }}
                           onBlur={(e) => {
                             if (+e.target.value === 0) {
                               e.target.value = 1;
+                              setCartProducts(
+                                cartProducts.map((p) =>
+                                  p.product._id === item.product._id
+                                    ? { ...p, quantity: 1 }
+                                    : p
+                                )
+                              );
                             }
                           }}
                           type="number"
                         />
-                        <button className="btn" onClick={() => {}}>
+                        <button
+                          className="btn"
+                          onClick={() => {
+                            setCartProducts(
+                              cartProducts.map((p) =>
+                                p.product._id === item.product._id
+                                  ? { ...p, quantity: p.quantity + 1 }
+                                  : p
+                              )
+                            );
+                          }}
+                        >
                           <FontAwesomeIcon icon={faCaretRight} />
                         </button>
                       </td>
@@ -161,7 +206,9 @@ const CartPage = () => {
                       <td>
                         <button
                           className="border-0 w-100 bg-white"
-                          onClick={() => {}}
+                          onClick={() => {
+                            handleRemoveProduct(item.product._id);
+                          }}
                         >
                           <FontAwesomeIcon icon={faTrashCan} />
                         </button>

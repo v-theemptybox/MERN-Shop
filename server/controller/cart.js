@@ -52,3 +52,27 @@ exports.updateCart = async (req, res, next) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+// Delete products in cart
+exports.deleteCartProduct = async (req, res, next) => {
+  try {
+    const { user, productId } = req.body;
+
+    const cart = await Cart.findOneAndUpdate(
+      { user },
+      { $pull: { products: { product: productId } } }, // use $pull of MongoDB to remove "product" from "products" array
+      { new: true }
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found for the user" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Product removed successfully", cart });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
