@@ -9,7 +9,8 @@ const URI =
 
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
-const cartRoute = require("./routes/cart");
+const cartRoutes = require("./routes/cart");
+const orderRoutes = require("./routes/order");
 
 const MongoDbStore = require("connect-mongodb-session")(session);
 
@@ -34,7 +35,8 @@ app.use(
 
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
-app.use("/api", cartRoute);
+app.use("/api", cartRoutes);
+app.use("/api", orderRoutes);
 
 mongoose.connect(URI).then(() => {
   console.log("MongoDb Connected");

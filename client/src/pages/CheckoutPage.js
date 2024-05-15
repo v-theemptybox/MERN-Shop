@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 const CheckoutPage = () => {
   const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+  const [cartId, setCartId] = useState("");
   const [cartProducts, setCartProducts] = useState([]);
 
   useEffect(() => {
@@ -15,6 +16,7 @@ const CheckoutPage = () => {
           });
 
           const resData = await response.json();
+          setCartId(resData._id);
           setCartProducts(resData.products);
         }
       } catch (err) {
@@ -25,9 +27,34 @@ const CheckoutPage = () => {
   }, [isLoggedIn]);
 
   const getTotalPrice = () => {
-    return cartProducts
-      .reduce((total, product) => total + product.totalProduct, 0)
-      .toLocaleString("vi-VN");
+    return cartProducts.reduce(
+      (total, product) => total + product.totalProduct,
+      0
+    );
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      if (cartProducts && cartProducts.length > 0) {
+        const response = await fetch("http://localhost:5000/api/postOrder", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cartId,
+            status: "pending",
+            totalPrice: getTotalPrice(),
+          }),
+        });
+
+        const resData = await response.json();
+        console.log(resData.message);
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+    }
   };
 
   return (
@@ -49,7 +76,7 @@ const CheckoutPage = () => {
                 type="text"
                 placeholder="Enter Your Full Name Here!"
                 required
-                value={loginUser.fullName}
+                value={loginUser.fullName || ""}
                 readOnly
               />
               <label className="col-12 mt-3 mb-2 fw-normal">EMAIL:</label>
@@ -58,7 +85,7 @@ const CheckoutPage = () => {
                 type="email"
                 placeholder="Enter Your Email Here!"
                 required
-                value={loginUser.email}
+                value={loginUser.email || ""}
                 readOnly
               />
               <label className="col-12 mt-3 mb-2 fw-normal">
@@ -70,7 +97,7 @@ const CheckoutPage = () => {
                 pattern="[0-9]{10}"
                 required
                 placeholder="Enter Your Phone Number Here!"
-                value={loginUser.phone}
+                value={loginUser.phone || ""}
                 readOnly
               />
               <label className="col-12 mt-3 mb-2 fw-normal">ADDRESS:</label>
@@ -79,12 +106,13 @@ const CheckoutPage = () => {
                 type="text"
                 placeholder="Enter Your Address Here!"
                 required
-                value={loginUser.address}
+                value={loginUser.address || ""}
                 readOnly
               />
               <button
                 type="button"
                 className="btn border-0 bg-dark text-light rounded-0 px-4 py-2 mt-3 fst-italic fw-light"
+                onClick={handlePlaceOrder}
               >
                 Place order
               </button>
@@ -93,7 +121,7 @@ const CheckoutPage = () => {
           <div className="col-4 ">
             <div className="bg-secondary bg-opacity-10 px-5 py-5 ">
               <h4 className="mb-4 fw-normal">YOUR ORDER</h4>
-              {cartProducts.map((item) => {
+              {cartProducts?.map((item) => {
                 return (
                   <div
                     key={item.product._id}
@@ -109,7 +137,9 @@ const CheckoutPage = () => {
               })}
               <div className="d-flex justify-content-between py-2">
                 <span className="fw-normal">TOTAL</span>
-                <span className="fw-normal fs-5">{getTotalPrice()} VND</span>
+                <span className="fw-normal fs-5">
+                  {getTotalPrice().toLocaleString("vi-VN")} VND
+                </span>
               </div>
             </div>
           </div>

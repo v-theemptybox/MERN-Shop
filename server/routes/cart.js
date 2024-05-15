@@ -9,7 +9,7 @@ router.get("/getCart", cartController.getCart);
 // Update cart (add to cart and update number of products)
 router.post("/updateCart", cartController.updateCart);
 
-// Remove products from cart
+// Remove product from cart
 router.put("/removeFromCart", cartController.deleteCartProduct);
 
 module.exports = router;

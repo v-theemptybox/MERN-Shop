@@ -53,7 +53,7 @@ exports.updateCart = async (req, res, next) => {
   }
 };
 
-// Delete products in cart
+// Delete product in cart
 exports.deleteCartProduct = async (req, res, next) => {
   try {
     const { user, productId } = req.body;

@@ -13,6 +13,7 @@ import RootLayout from "./pages/RootLayout";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "./App.css";
+import OrderPage from "./pages/OrderPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -48,6 +49,10 @@ function App() {
         {
           path: "register",
           element: <RegisterPage />,
+        },
+        {
+          path: "order",
+          element: <OrderPage />,
         },
       ],
     },
