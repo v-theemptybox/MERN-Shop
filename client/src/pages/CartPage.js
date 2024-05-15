@@ -74,6 +74,34 @@ const CartPage = () => {
       .toLocaleString("vi-VN");
   };
 
+  const handleUpdateCart = async (productId, amount, productPrice) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/updateCart", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: loginUser._id,
+          products: [
+            {
+              product: productId,
+              quantity: amount,
+              totalProduct: amount * +productPrice,
+            },
+          ],
+        }),
+      });
+
+      const resData = await response.json();
+      setUpdateView((prev) => !prev);
+      return resData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="container">
       <Banner />
@@ -147,12 +175,10 @@ const CartPage = () => {
                                 "Quantity must be greater than 0!\nIf you don't buy this product anymore, please delete it"
                               );
                             } else {
-                              setCartProducts(
-                                cartProducts.map((p) =>
-                                  p.product._id === item.product._id
-                                    ? { ...p, quantity: p.quantity - 1 }
-                                    : p
-                                )
+                              handleUpdateCart(
+                                item.product._id,
+                                -1,
+                                item.product.price
                               );
                             }
                           }}
@@ -164,6 +190,7 @@ const CartPage = () => {
                           className="w-25 border-0 text-center"
                           min="1"
                           value={item.quantity}
+                          readOnly
                           onChange={(e) => {
                             setCartProducts(
                               cartProducts.map((p) =>
@@ -173,29 +200,15 @@ const CartPage = () => {
                               )
                             );
                           }}
-                          onBlur={(e) => {
-                            if (+e.target.value === 0) {
-                              e.target.value = 1;
-                              setCartProducts(
-                                cartProducts.map((p) =>
-                                  p.product._id === item.product._id
-                                    ? { ...p, quantity: 1 }
-                                    : p
-                                )
-                              );
-                            }
-                          }}
                           type="number"
                         />
                         <button
                           className="btn"
                           onClick={() => {
-                            setCartProducts(
-                              cartProducts.map((p) =>
-                                p.product._id === item.product._id
-                                  ? { ...p, quantity: p.quantity + 1 }
-                                  : p
-                              )
+                            handleUpdateCart(
+                              item.product._id,
+                              1,
+                              item.product.price
                             );
                           }}
                         >

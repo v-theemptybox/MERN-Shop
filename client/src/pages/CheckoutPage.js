@@ -1,15 +1,35 @@
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const CheckoutPage = () => {
-  const listCart = useSelector((state) => state.cart.listCart);
+  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+  const [cartProducts, setCartProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (isLoggedIn) {
+          const response = await fetch("http://localhost:5000/api/getCart", {
+            method: "GET",
+            credentials: "include",
+          });
+
+          const resData = await response.json();
+          setCartProducts(resData.products);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, [isLoggedIn]);
 
   const getTotalPrice = () => {
-    let totalPrice = 0;
-    listCart.forEach((product) => {
-      totalPrice += product.price * product.amount;
-    });
-    return totalPrice.toLocaleString("vi-VN");
+    return cartProducts
+      .reduce((total, product) => total + product.totalProduct, 0)
+      .toLocaleString("vi-VN");
   };
+
   return (
     <div className="container">
       <div className="d-flex justify-content-between bg-secondary bg-opacity-10 align-items-center h-100 py-5">
@@ -29,6 +49,8 @@ const CheckoutPage = () => {
                 type="text"
                 placeholder="Enter Your Full Name Here!"
                 required
+                value={loginUser.fullName}
+                readOnly
               />
               <label className="col-12 mt-3 mb-2 fw-normal">EMAIL:</label>
               <input
@@ -36,6 +58,8 @@ const CheckoutPage = () => {
                 type="email"
                 placeholder="Enter Your Email Here!"
                 required
+                value={loginUser.email}
+                readOnly
               />
               <label className="col-12 mt-3 mb-2 fw-normal">
                 PHONE NUMBER:
@@ -46,6 +70,8 @@ const CheckoutPage = () => {
                 pattern="[0-9]{10}"
                 required
                 placeholder="Enter Your Phone Number Here!"
+                value={loginUser.phone}
+                readOnly
               />
               <label className="col-12 mt-3 mb-2 fw-normal">ADDRESS:</label>
               <input
@@ -53,8 +79,13 @@ const CheckoutPage = () => {
                 type="text"
                 placeholder="Enter Your Address Here!"
                 required
+                value={loginUser.address}
+                readOnly
               />
-              <button className="btn border-0 bg-dark text-light rounded-0 px-4 py-2 mt-3 fst-italic fw-light">
+              <button
+                type="button"
+                className="btn border-0 bg-dark text-light rounded-0 px-4 py-2 mt-3 fst-italic fw-light"
+              >
                 Place order
               </button>
             </form>
@@ -62,16 +93,16 @@ const CheckoutPage = () => {
           <div className="col-4 ">
             <div className="bg-secondary bg-opacity-10 px-5 py-5 ">
               <h4 className="mb-4 fw-normal">YOUR ORDER</h4>
-              {listCart.map((product) => {
+              {cartProducts.map((item) => {
                 return (
                   <div
-                    key={product._id.$oid}
+                    key={item.product._id}
                     className="d-flex justify-content-between border-bottom border-secondary-subtle py-2"
                   >
-                    <span className="fw-normal">{product.name}</span>
+                    <span className="fw-normal">{item.product.name}</span>
                     <span>
-                      {parseInt(product.price).toLocaleString("vi-VN")}VND x{" "}
-                      {product.amount}
+                      {parseInt(item.product.price).toLocaleString("vi-VN")}VND
+                      x {item.quantity}
                     </span>
                   </div>
                 );
