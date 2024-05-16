@@ -1,5 +1,17 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "stars.nhiepphong@gmail.com",
+    pass: "fiwm hybe cvco hyfa",
+  },
+});
 
 // Get orders by user id
 exports.getOrdersByUser = async (req, res, next) => {
@@ -36,8 +48,6 @@ exports.postOrder = async (req, res, next) => {
     }
 
     // create an order
-    if (cart.products) {
-    }
     let order = new Order({
       user: cart.user,
       products: cart.products,
@@ -46,14 +56,64 @@ exports.postOrder = async (req, res, next) => {
     });
     await order.save();
     order = await order.populate("products.product");
+    const userOrder = await order.populate("user");
 
     // remove all products from cart
-    if (cart) {
-      cart.products = [];
-      await cart.save();
-    } else {
-      return res.status(404).json({ message: "Cart not found" });
-    }
+    cart.products = [];
+    await cart.save();
+
+    // convert products array to string (join(""))
+    const productsHtml = order.products
+      .map(
+        (item) => `
+      <tr>
+        <td style="border:1px solid black;">${item.product.name}</td>
+        <td style="border:1px solid black;"><img src="${
+          item.product.img1
+        }" alt="${item.product.name}" width="50" /></td>
+        <td style="border:1px solid black;">${(+item.product
+          .price).toLocaleString("vi-VN")} VND</td>
+        <td style="border:1px solid black;">${item.quantity}</td>
+        <td style="border:1px solid black;">${item.totalProduct.toLocaleString(
+          "vi-VN"
+        )} VND</td>
+      </tr>
+    `
+      )
+      .join("");
+
+    transporter.sendMail({
+      from: { name: "vTechShop", address: "stars.nhiepphong@gmail.com" },
+      to: userOrder.user.email,
+      subject: "Confirm order",
+      html: `<h1>Xin chào ${userOrder.user.fullName}</h1>
+      <p>Phone: ${userOrder.user.phone}</p>
+      <p>Address: ${userOrder.user.address}</p>
+      <table>
+        <tbody style="border:1px solid black;text-align:center;">
+          <tr>
+            <td style="border:1px solid black;">
+              Tên Sản Phẩm
+            </td>
+            <td style="border:1px solid black;">
+              Hình ảnh
+            </td>
+            <td style="border:1px solid black;">
+              Giá
+            </td>
+            <td style="border:1px solid black;">
+              Số Lượng
+            </td>
+            <td style="border:1px solid black;">
+              Thành tiền
+            </td>
+          </tr>
+          ${productsHtml}
+        </tbody>
+      </table>
+      <h3>Tổng thanh toán: ${order.totalPrice.toLocaleString("vi-VN")} VND</h3>
+      <h3>Cảm ơn bạn!</h3>`,
+    });
 
     return res
       .status(201)

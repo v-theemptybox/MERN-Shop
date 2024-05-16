@@ -1,15 +1,6 @@
 import { useSelector } from "react-redux";
-import {
-  faTrashCan,
-  faCaretLeft,
-  faCaretRight,
-  faArrowLeft,
-  faArrowRight,
-  faGift,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import styles from "./DetailPage.module.css";
-import Banner from "../component/Banner";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -33,6 +24,7 @@ const OrderPage = () => {
 
           const resData = await response.json();
           setOrders(resData);
+          console.log(resData);
         }
       } catch (err) {
         console.error(err);
