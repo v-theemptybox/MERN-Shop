@@ -123,3 +123,22 @@ exports.postOrder = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Get order by id
+exports.getOrderById = async (req, res, next) => {
+  try {
+    const orderId = req.params.orderId;
+    const order = await Order.findById(orderId).populate(
+      "user products.product"
+    );
+
+    if (!order) {
+      res.status(404).json({ message: "Order not found" });
+    }
+
+    return res.status(200).json(order);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

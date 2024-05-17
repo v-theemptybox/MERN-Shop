@@ -14,6 +14,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "./App.css";
 import OrderPage from "./pages/OrderPage";
+import OrderDetail from "./pages/OrderDetail";
 
 function App() {
   const router = createBrowserRouter([
@@ -53,6 +54,10 @@ function App() {
         {
           path: "order",
           element: <OrderPage />,
+        },
+        {
+          path: "order/:orderId",
+          element: <OrderDetail />,
         },
       ],
     },

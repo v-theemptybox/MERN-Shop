@@ -9,4 +9,7 @@ router.post("/postOrder", orderController.postOrder);
 // Get order by user id
 router.get("/getOrdersByUser", orderController.getOrdersByUser);
 
+// Get order by order id
+router.get("/getOrder/:orderId", orderController.getOrderById);
+
 module.exports = router;

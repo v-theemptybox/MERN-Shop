@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const OrderPage = () => {
@@ -19,6 +19,9 @@ const OrderPage = () => {
             {
               method: "GET",
               credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
           );
 
@@ -106,17 +109,31 @@ const OrderPage = () => {
                   return (
                     <tr key={order._id} className="text-center">
                       <td>{order._id}</td>
-                      <td>{order.user._id} </td>
-                      <td>{order.user.fullName} </td>
-                      <td>{order.user.phone} </td>
-                      <td>{order.user.address} </td>
-                      <td>{order.totalPrice.toLocaleString("vi-VN")} VND </td>
-                      <td>{""} </td>
-                      <td>{order.status} </td>
+                      <td>{order.user._id}</td>
+                      <td>{order.user.fullName}</td>
+                      <td>{order.user.phone}</td>
+                      <td>{order.user.address}</td>
+                      <td>{order.totalPrice.toLocaleString("vi-VN")} VND</td>
                       <td>
-                        <button className="py-1 px-2">
+                        {order.status === "completed"
+                          ? "Delivered successfully"
+                          : order.status === "awaiting shipment"
+                          ? "Being delivered"
+                          : "Waiting for progressing"}
+                      </td>
+                      <td>
+                        {order.status === "completed"
+                          ? "Complete the order"
+                          : "Waiting for pay"}
+                      </td>
+                      <td>
+                        <Link
+                          className="py-1 px-1 text-decoration-none border border-2 fst-normal"
+                          to={`${order._id}`}
+                          target="_blank"
+                        >
                           View <FontAwesomeIcon icon={faArrowRight} />
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   );

@@ -3,7 +3,11 @@ import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCartShopping,
+  faUser,
+  faFileInvoice,
+} from "@fortawesome/free-solid-svg-icons";
 import { onLogin, onLogout } from "../store";
 
 const Navbar = () => {
@@ -70,6 +74,16 @@ const Navbar = () => {
       </div>
       <h1 className={styles.logo}>BOUTIQUE</h1>
       <div className={styles["btn-nav"]}>
+        {isLoggedIn && (
+          <button
+            onClick={() => {
+              navigate("/order");
+            }}
+          >
+            <FontAwesomeIcon icon={faFileInvoice} className="text-secondary" />{" "}
+            Order history
+          </button>
+        )}
         <button
           onClick={() => {
             navigate("/cart");
