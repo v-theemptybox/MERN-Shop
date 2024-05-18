@@ -81,7 +81,12 @@ const Sidebar = () => {
                     </span>
                   </button>
                 </li>
-                <li className="nav-item">
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/products");
+                  }}
+                >
                   <button className="nav-link px-0">
                     <FontAwesomeIcon icon={faBoxesStacked} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">

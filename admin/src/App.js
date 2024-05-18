@@ -6,6 +6,7 @@ import "bootstrap/dist/js/bootstrap.bundle";
 import Root from "./layouts/Root";
 import Dashboard from "./pages/Dashboard";
 import Order from "./pages/Order";
+import Product from "./pages/Product";
 
 function App() {
   const router = createBrowserRouter([
@@ -21,6 +22,10 @@ function App() {
         {
           path: "orders",
           element: <Order />,
+        },
+        {
+          path: "products",
+          element: <Product />,
         },
       ],
     },

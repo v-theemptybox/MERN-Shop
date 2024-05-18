@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 
 const paging = require("../utils/paging");
@@ -75,6 +76,31 @@ exports.getOrders = async (req, res, next) => {
       results,
       page,
       totalPages: Math.ceil(sortedOrders.length / PAGE_SIZE),
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get all products
+exports.getProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find();
+    // get page through query params
+    const page = +req.query.page || 1;
+
+    if (!products) {
+      res.status(404).json({ message: "Product not found" });
+    }
+
+    const sortedProducts = products.sort((a, b) => b.createdAt - a.createdAt);
+    const results = paging(sortedProducts, PAGE_SIZE, page);
+
+    res.status(200).json({
+      results,
+      page,
+      totalPages: Math.ceil(sortedProducts.length / PAGE_SIZE),
     });
   } catch (error) {
     console.log(error);

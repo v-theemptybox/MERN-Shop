@@ -30,7 +30,7 @@ const Dashboard = () => {
         <div className="mb-4">
           <h3>History</h3>
         </div>
-        <table className="table table-striped">
+        <table className="table table-striped table-bordered">
           <thead>
             <tr>
               <th scope="col">ID User</th>
@@ -44,7 +44,7 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {orders?.map((order) => (
               <tr>
                 <td>{order.user._id}</td>
                 <td>{order.user.fullName}</td>
