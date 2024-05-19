@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const cors = require("cors");
+const path = require("path");
 
 const PORT = 5000;
 const URI =
@@ -24,7 +25,8 @@ app.use(
     origin: ["http://localhost:3000", "http://localhost:3001"],
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ limit: "5mb" }));
 app.use(
   session({
     secret: "secret",
@@ -34,6 +36,7 @@ app.use(
   })
 );
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
 app.use("/api", cartRoutes);

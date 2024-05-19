@@ -111,7 +111,12 @@ const Sidebar = () => {
                 <li className="nav-item mt-3">
                   <p className="text-secondary ">New</p>
                 </li>
-                <li className="nav-item">
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/create-product");
+                  }}
+                >
                   <button className="nav-link px-0">
                     <FontAwesomeIcon icon={faBox} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">

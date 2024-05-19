@@ -12,6 +12,7 @@ const productSchema = new Schema(
     name: { type: String, required: true },
     price: { type: String, required: true },
     short_desc: { type: String, require: true },
+    stock: { type: Number },
   },
   { timestamps: true }
 );

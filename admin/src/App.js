@@ -7,6 +7,7 @@ import Root from "./layouts/Root";
 import Dashboard from "./pages/Dashboard";
 import Order from "./pages/Order";
 import Product from "./pages/Product";
+import UpdateProduct from "./pages/UpdateProduct";
 
 function App() {
   const router = createBrowserRouter([
@@ -26,6 +27,10 @@ function App() {
         {
           path: "products",
           element: <Product />,
+        },
+        {
+          path: "create-product",
+          element: <UpdateProduct />,
         },
       ],
     },

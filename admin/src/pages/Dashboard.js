@@ -45,7 +45,7 @@ const Dashboard = () => {
           </thead>
           <tbody>
             {orders?.map((order) => (
-              <tr>
+              <tr key={order._id}>
                 <td>{order.user._id}</td>
                 <td>{order.user.fullName}</td>
                 <td>{order.user.phone}</td>

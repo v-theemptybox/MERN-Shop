@@ -1,8 +1,8 @@
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-const Cart = require("../models/Cart");
 
+const extData = require("../utils/extractData");
 const paging = require("../utils/paging");
 const PAGE_SIZE = 5;
 
@@ -102,6 +102,59 @@ exports.getProducts = async (req, res, next) => {
       page,
       totalPages: Math.ceil(sortedProducts.length / PAGE_SIZE),
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Add a product
+exports.postProduct = async (req, res, next) => {
+  try {
+    const { name, price, shortDesc, longDesc, category, stock } = req.body;
+    const files = req.files;
+
+    if (
+      !name ||
+      !price ||
+      !shortDesc ||
+      !longDesc ||
+      !category ||
+      !stock ||
+      !files
+    ) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // uploaded files must be 4 images
+    if (files.length !== 4) {
+      return res
+        .status(400)
+        .json({ message: "Exactly 4 images are required." });
+    }
+
+    const newProduct = new Product({
+      name,
+      price,
+      short_desc: shortDesc,
+      long_desc: longDesc,
+      category,
+      stock,
+    });
+
+    files.forEach((file, index) => {
+      newProduct[
+        `img${index + 1}`
+      ] = `http://localhost:5000/uploads/${file.filename}`;
+    });
+
+    console.log(newProduct);
+
+    await newProduct.save();
+
+    res
+      .status(201)
+      .json({ message: "Product created successfully", product: newProduct });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
