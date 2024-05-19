@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-const extData = require("../utils/extractData");
+const fileHelper = require("../utils/filerHelper");
 const paging = require("../utils/paging");
 const PAGE_SIZE = 5;
 
@@ -148,13 +148,51 @@ exports.postProduct = async (req, res, next) => {
       ] = `http://localhost:5000/uploads/${file.filename}`;
     });
 
-    console.log(newProduct);
-
     await newProduct.save();
 
     res
       .status(201)
       .json({ message: "Product created successfully", product: newProduct });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete a product
+exports.deleteProduct = async (req, res, next) => {
+  try {
+    const productId = req.body.productId;
+    console.log(productId);
+    console.log(req.body);
+    // get delete product by id
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // get images path to delete; if there is any falsy value, that falsy value will be excluded
+    const images = [
+      product.img1,
+      product.img2,
+      product.img3,
+      product.img4,
+    ].filter(Boolean);
+
+    console.log(images);
+
+    // delete product data in db
+    await Product.deleteOne({ _id: productId });
+
+    // delete images
+    const domain = "http://localhost:5000/";
+    images.forEach((imagePath) => {
+      const relativePath = imagePath.replace(domain, "");
+      fileHelper.deleteFile(relativePath);
+    });
+
+    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

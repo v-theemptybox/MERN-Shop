@@ -6,6 +6,7 @@ const Product = () => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [updateView, setUpdateView] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +29,31 @@ const Product = () => {
       }
     };
     fetchData();
-  }, [page]);
+  }, [page, updateView]);
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      console.log(productId);
+      const response = await fetch(
+        "http://localhost:5000/admin/deleteProduct",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+          }),
+        }
+      );
+
+      const resData = await response.json();
+      console.log(resData.message);
+      setUpdateView((prevState) => !prevState);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -66,7 +91,12 @@ const Product = () => {
                   <button className="rounded border-0 bg-success bg-opacity-75 text-white p-2 me-2">
                     Update
                   </button>
-                  <button className="rounded border-0 bg-danger bg-opacity-75 text-white p-2">
+                  <button
+                    className="rounded border-0 bg-danger bg-opacity-75 text-white p-2"
+                    onClick={() => {
+                      handleDeleteProduct(product._id);
+                    }}
+                  >
                     Delete
                   </button>
                 </td>
