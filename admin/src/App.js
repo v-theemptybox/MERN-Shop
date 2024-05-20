@@ -9,6 +9,7 @@ import Order from "./pages/Order";
 import Product from "./pages/Product";
 import UpdateProduct from "./pages/UpdateProduct";
 import User from "./pages/User";
+import CustomerSupport from "./pages/CustomerSupport";
 
 function App() {
   const router = createBrowserRouter([
@@ -36,6 +37,10 @@ function App() {
         {
           path: "users",
           element: <User />,
+        },
+        {
+          path: "customer-support",
+          element: <CustomerSupport />,
         },
       ],
     },

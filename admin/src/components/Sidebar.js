@@ -10,6 +10,7 @@ import {
   faRightFromBracket,
   faRegistered,
   faSignIn,
+  faComments,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
@@ -126,6 +127,23 @@ const Sidebar = () => {
                     <FontAwesomeIcon icon={faBox} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">
                       New Product
+                    </span>
+                  </button>
+                </li>
+
+                <li className="nav-item mt-3">
+                  <p className="text-secondary ">Support</p>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/customer-support");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faComments} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Customer
                     </span>
                   </button>
                 </li>

@@ -45,7 +45,18 @@ app.use("/admin", adminRoutes);
 
 mongoose.connect(URI).then(() => {
   console.log("MongoDb Connected");
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log("Server start!");
+  });
+  const io = require("socket.io")(server, {
+    cors: {
+      origin: ["http://localhost:3000", "http://localhost:3001"],
+    },
+  });
+  io.on("connection", (socket) => {
+    console.log("Client connected");
+    socket.on("sendMessage", (data) => {
+      io.emit("receiveMessage", data);
+    });
   });
 });

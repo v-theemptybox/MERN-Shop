@@ -1,11 +1,42 @@
+import openSocket from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFaceSmile,
   faPaperPlane,
   faPaperclip,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useRef, useState } from "react";
 
 const ChatBox = () => {
+  const [socketMessage, setSocketMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const socketRef = useRef();
+  const endMessage = useRef();
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = openSocket("http://localhost:5000");
+
+      socketRef.current.on("receiveMessage", (message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+        handleScrollMessage();
+      });
+    }
+  }, []);
+
+  // console.log(socketRef.current);
+  const handleAddMessage = () => {
+    if (socketMessage.trim()) {
+      socketRef.current.emit("sendMessage", socketMessage);
+      setSocketMessage("");
+    }
+  };
+
+  console.log(messages);
+
+  const handleScrollMessage = () => {
+    endMessage.current.scrollIntoView({ behavior: "smooth" });
+  };
   return (
     <div>
       <div
@@ -23,66 +54,46 @@ const ChatBox = () => {
             Let's Chat App
           </button>
         </div>
-        <div className="row row-cols-3 px-3 py-4">
-          <div className="col-2 my-3"></div>
-          <div className="col-8 text-end text-light my-3">
-            <span className="rounded bg-primary bg-opacity-75 px-2 py-2">
-              Xin chào
-            </span>
-          </div>
-          <div className="col-2 my-3"></div>
-          <div className="col-2 my-3"></div>
-          <div className="col-8 text-end text-light my-3">
-            <p className="rounded bg-primary bg-opacity-75 px-2 py-2">
-              Làm thế nào để xem các sản phẩm
-            </p>
-          </div>
-          <div className="col-2 my-3"></div>
-          <div className="col-2 my-3">
-            <img
-              src="./img-asm03/businessman.png"
-              className="w-75"
-              alt="admin"
-            />
-          </div>
-          <div className="col-8 my-3">
-            <span className="rounded bg-secondary bg-opacity-10 px-2 py-2">
-              ADMIN chào bạn
-            </span>
-          </div>
-          <div className="col-2 my-3"></div>
-          <div className="col-2 my-3">
-            <img
-              src="./img-asm03/businessman.png"
-              className="w-75"
-              alt="admin"
-            />
-          </div>
-          <div className="col-8 my-3">
-            <p className="rounded bg-secondary bg-opacity-10 px-2 py-2">
-              ADMIN: Bạn có thể vào mục Shop để xem các sản phẩm
-            </p>
-          </div>
-          <div className="col-2 my-3"></div>
+        <div
+          style={{ overflowY: "scroll", overflowX: "hidden", height: "40vh" }}
+        >
+          {messages.map((message, index) => (
+            <div key={index} className="row row-cols-3 px-3 py-1">
+              <div className="col-2 mb-1"></div>
+              <div
+                className="col-8 text-end text-light mb-1"
+                style={{ overflowWrap: "anywhere" }}
+              >
+                <p className="d-inline-block rounded bg-primary bg-opacity-75 px-2 py-2">
+                  {message}
+                </p>
+              </div>
+              <div className="col-2 mb-1">User</div>
+            </div>
+          ))}
+          <div ref={endMessage} />
         </div>
+
         <div className="border-top border-secondary-subtle bg-secondary bg-opacity-10 px-3 py-4">
           <div className="row">
-            <div className="col-2">
-              <img
-                src="./img-asm03/businessman.png"
-                className="w-75"
-                alt="admin"
-              />
+            <div className="col-2 text-center">
+              <FontAwesomeIcon icon={faUser} />
             </div>
             <div className="col-10 align-self-center">
               <input
                 type="text"
                 placeholder="Enter Message!"
                 className="border-0 ps-1 py-1"
+                value={socketMessage}
+                onChange={(e) => setSocketMessage(e.target.value)}
               />
               <FontAwesomeIcon icon={faPaperclip} className="px-2" />
               <FontAwesomeIcon icon={faFaceSmile} className="px-2" />
-              <FontAwesomeIcon icon={faPaperPlane} className="px-2 text-info" />
+              <FontAwesomeIcon
+                icon={faPaperPlane}
+                className="px-2 text-info"
+                onClick={handleAddMessage}
+              />
             </div>
           </div>
         </div>
