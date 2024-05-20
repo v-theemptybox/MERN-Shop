@@ -73,7 +73,12 @@ const Sidebar = () => {
                 <li className="nav-item mt-3">
                   <p className="text-secondary ">List</p>
                 </li>
-                <li className="nav-item">
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/users");
+                  }}
+                >
                   <button className="nav-link px-0">
                     <FontAwesomeIcon icon={faUser} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">

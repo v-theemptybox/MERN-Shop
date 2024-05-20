@@ -83,6 +83,31 @@ exports.getOrders = async (req, res, next) => {
   }
 };
 
+// Get all users
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    const page = +req.query.page || 1;
+
+    if (!users) {
+      res.status(404).json({ message: "Users not found" });
+    }
+
+    const sortedUsers = users.sort((a, b) => b.createdAt - a.createdAt);
+
+    const results = paging(sortedUsers, PAGE_SIZE, page);
+
+    res.status(200).json({
+      results,
+      page,
+      totalPages: Math.ceil(sortedUsers.length / PAGE_SIZE),
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Get all products
 exports.getProducts = async (req, res, next) => {
   try {

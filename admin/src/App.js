@@ -1,4 +1,4 @@
-import { useState, createContext } from "react";
+import { useState } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Order from "./pages/Order";
 import Product from "./pages/Product";
 import UpdateProduct from "./pages/UpdateProduct";
+import User from "./pages/User";
 
 function App() {
   const router = createBrowserRouter([
@@ -31,6 +32,10 @@ function App() {
         {
           path: "create-product",
           element: <UpdateProduct />,
+        },
+        {
+          path: "users",
+          element: <User />,
         },
       ],
     },

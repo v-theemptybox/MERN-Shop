@@ -4,6 +4,9 @@ const upload = require("../middleware/multerUpload");
 
 const router = express.Router();
 
+// Get users
+router.get("/getUsers", adminController.getUsers);
+
 // Get orders
 router.get("/getOrders", adminController.getOrders);
 
