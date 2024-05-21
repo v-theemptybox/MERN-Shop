@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTableColumns,
@@ -12,10 +13,25 @@ import {
   faSignIn,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { onLogout } from "../store";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/signOut", {
+        method: "POST",
+        credentials: "include",
+      });
+      const resData = await response.text();
+      console.log(resData);
+      dispatch(onLogout());
+      navigate("/login");
+    } catch (error) {}
+  };
+
   return (
     <>
       <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white border-end">
@@ -51,7 +67,12 @@ const Sidebar = () => {
             </li>
 
             <>
-              <li className="nav-item">
+              <li
+                className="nav-item"
+                onClick={() => {
+                  navigate("/register");
+                }}
+              >
                 <button className="nav-link px-0">
                   <FontAwesomeIcon icon={faRegistered} />{" "}
                   <span className="ms-1 d-none d-sm-inline text-secondary">
@@ -59,7 +80,12 @@ const Sidebar = () => {
                   </span>
                 </button>
               </li>
-              <li className="nav-item">
+              <li
+                className="nav-item"
+                onClick={() => {
+                  navigate("/login");
+                }}
+              >
                 <button className="nav-link px-0">
                   <FontAwesomeIcon icon={faSignIn} />{" "}
                   <span className="ms-1 d-none d-sm-inline text-secondary">
@@ -151,7 +177,7 @@ const Sidebar = () => {
                 <li className="nav-item mt-3">
                   <p className="text-secondary ">User</p>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item" onClick={handleLogout}>
                   <button href="#" className="nav-link px-0">
                     <FontAwesomeIcon icon={faRightFromBracket} />{" "}
                     <span className="ms-1 d-none d-sm-inline text-secondary">

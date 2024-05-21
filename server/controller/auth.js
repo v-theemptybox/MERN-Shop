@@ -46,6 +46,7 @@ exports.postSignIn = async (req, res, next) => {
     // if username and password is valid
     // save user into session
     req.session.user = user;
+    req.session.chatLog = [{ userId: user._id, message: "" }];
     req.session.isLoggedIn = true;
 
     req.session.save((err) => console.log(err));

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store/index";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
@@ -10,6 +12,8 @@ import Product from "./pages/Product";
 import UpdateProduct from "./pages/UpdateProduct";
 import User from "./pages/User";
 import CustomerSupport from "./pages/CustomerSupport";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
 
 function App() {
   const router = createBrowserRouter([
@@ -42,14 +46,24 @@ function App() {
           path: "customer-support",
           element: <CustomerSupport />,
         },
+        {
+          path: "register",
+          element: <Register />,
+        },
+        {
+          path: "login",
+          element: <Login />,
+        },
       ],
     },
   ]);
 
   return (
-    <div className="App">
-      <RouterProvider router={router}></RouterProvider>
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <RouterProvider router={router}></RouterProvider>
+      </div>
+    </Provider>
   );
 }
 

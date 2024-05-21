@@ -24,7 +24,7 @@ const ChatBox = () => {
     }
   }, []);
 
-  // console.log(socketRef.current);
+  // add message to chat box
   const handleAddMessage = () => {
     if (socketMessage.trim()) {
       socketRef.current.emit("sendMessage", socketMessage);
@@ -32,10 +32,16 @@ const ChatBox = () => {
     }
   };
 
-  console.log(messages);
-
+  // show scrollbar on chat box
   const handleScrollMessage = () => {
     endMessage.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // add message when hit "Enter"
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleAddMessage();
+    }
   };
   return (
     <div>
@@ -86,6 +92,7 @@ const ChatBox = () => {
                 className="border-0 ps-1 py-1"
                 value={socketMessage}
                 onChange={(e) => setSocketMessage(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e)}
               />
               <FontAwesomeIcon icon={faPaperclip} className="px-2" />
               <FontAwesomeIcon icon={faFaceSmile} className="px-2" />
