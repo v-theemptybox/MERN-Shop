@@ -26,4 +26,7 @@ router.post(
 // Delete a product
 router.delete("/deleteProduct", adminController.deleteProduct);
 
+// Get all sessions
+router.get("/getSessions", adminController.getSessions);
+
 module.exports = router;

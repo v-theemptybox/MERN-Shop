@@ -5,19 +5,29 @@ import {
   faPaperPlane,
   faPaperclip,
   faUser,
+  faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 
 const ChatBox = () => {
   const [socketMessage, setSocketMessage] = useState("");
   const [messages, setMessages] = useState([]);
+
   const socketRef = useRef();
   const endMessage = useRef();
+
   useEffect(() => {
     if (!socketRef.current) {
       socketRef.current = openSocket("http://localhost:5000");
 
+      socketRef.current.emit("joinRoom", socketRef.current.id);
+
+      socketRef.current.on("connect", () => {
+        console.log("You connecting with", socketRef.current.id);
+      });
+
       socketRef.current.on("receiveMessage", (message) => {
+        console.log(message);
         setMessages((prevMessages) => [...prevMessages, message]);
         handleScrollMessage();
       });
@@ -27,14 +37,17 @@ const ChatBox = () => {
   // add message to chat box
   const handleAddMessage = () => {
     if (socketMessage.trim()) {
-      socketRef.current.emit("sendMessage", socketMessage);
+      socketRef.current.emit("sendMessage", {
+        socketId: socketRef.current.id,
+        msg: "cl" + socketMessage,
+      });
       setSocketMessage("");
     }
   };
 
   // show scrollbar on chat box
   const handleScrollMessage = () => {
-    endMessage.current.scrollIntoView({ behavior: "smooth" });
+    endMessage.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   // add message when hit "Enter"
@@ -43,6 +56,14 @@ const ChatBox = () => {
       handleAddMessage();
     }
   };
+
+  const sliceMsg = (msg) => {
+    if (msg.slice(0, 2) === "cl") {
+      return true;
+    }
+  };
+
+  console.log(messages);
   return (
     <div>
       <div
@@ -65,16 +86,34 @@ const ChatBox = () => {
         >
           {messages.map((message, index) => (
             <div key={index} className="row row-cols-3 px-3 py-1">
-              <div className="col-2 mb-1"></div>
+              <div className="col-2 mb-1 text-end">
+                {sliceMsg(message.msg) ? (
+                  ""
+                ) : (
+                  <FontAwesomeIcon icon={faUserTie} />
+                )}
+              </div>
               <div
-                className="col-8 text-end text-light mb-1"
+                className={`col-8 ${
+                  sliceMsg(message.msg) ? "text-end" : "text-start"
+                } text-light mb-1`}
                 style={{ overflowWrap: "anywhere" }}
               >
-                <p className="d-inline-block rounded bg-primary bg-opacity-75 px-2 py-2">
-                  {message}
+                <p
+                  className={`d-inline-block rounded ${
+                    sliceMsg(message.msg) ? "bg-primary" : "bg-secondary"
+                  } bg-opacity-75 px-2 py-2`}
+                >
+                  {message.msg.slice(2)}
                 </p>
               </div>
-              <div className="col-2 mb-1">User</div>
+              <div className="col-2 mb-1">
+                {sliceMsg(message.msg) ? (
+                  <FontAwesomeIcon className="text-primary" icon={faUser} />
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
           ))}
           <div ref={endMessage} />

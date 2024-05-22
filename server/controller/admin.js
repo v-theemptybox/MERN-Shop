@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
@@ -218,6 +219,24 @@ exports.deleteProduct = async (req, res, next) => {
     });
 
     res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get all sessions
+exports.getSessions = async (req, res, next) => {
+  try {
+    // get db through current connection
+    const { db } = mongoose.connection;
+
+    const sessions = await db.collection("sessions").find().toArray();
+    if (!sessions) {
+      return;
+    }
+
+    res.status(200).json(sessions);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

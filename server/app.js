@@ -54,9 +54,19 @@ mongoose.connect(URI).then(() => {
     },
   });
   io.on("connection", (socket) => {
-    console.log("Client connected");
+    console.log("Client connected " + socket.id);
+
+    socket.on("joinRoom", (roomId) => {
+      socket.join(roomId);
+      // console.log(`Socket ${socket.id} joined room ${roomId}`);
+    });
+
+    // socket.emit("getId", socket.id);
     socket.on("sendMessage", (data) => {
-      io.emit("receiveMessage", data);
+      // socket.join(data.socketId);
+      // console.log(data);
+      io.to(data.socketId).emit("receiveMessage", data);
+      io.emit("getRoomId", data.socketId);
     });
   });
 });

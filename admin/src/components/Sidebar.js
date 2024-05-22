@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTableColumns,
@@ -13,9 +13,10 @@ import {
   faSignIn,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
-import { onLogout } from "../store";
+import { onLogout, onLogin } from "../store";
 
 const Sidebar = () => {
+  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -190,9 +191,8 @@ const Sidebar = () => {
           </ul>
           <hr />
           <div className="dropdown pb-4">
-            <a
-              href="#"
-              className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+            <button
+              className="d-flex align-items-center text-white border border-0 bg-white dropdown-toggle"
               id="dropdownUser1"
               data-bs-toggle="dropdown"
               aria-expanded="false"
@@ -205,9 +205,9 @@ const Sidebar = () => {
                 className="rounded-circle"
               />
               <span className="d-none d-sm-inline mx-1 text-secondary">
-                {"username"}
+                {isLoggedIn ? `${loginUser.email}` : "username"}
               </span>
-            </a>
+            </button>
             <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
               <li>
                 <button className="dropdown-item">Profile</button>
