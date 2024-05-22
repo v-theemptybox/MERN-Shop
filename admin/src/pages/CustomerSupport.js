@@ -13,7 +13,7 @@ const CustomerSupport = () => {
   const [rooms, setRooms] = useState([]);
 
   const [roomId, setRoomId] = useState("");
-  const [newRoom, setNewRoom] = useState("");
+  const [roomMsg, setRoomMsg] = useState([]);
 
   const socketRef = useRef();
   const endMessage = useRef();
@@ -41,10 +41,6 @@ const CustomerSupport = () => {
 
   useEffect(() => {
     if (roomId) {
-      // save current messages to local storage
-      // const currentMessages = [...messages];
-      // localStorage.setItem(roomId, JSON.stringify(currentMessages));
-
       socketRef.current.emit("joinRoom", roomId);
       setRooms((prevRooms) => {
         if (!prevRooms.some((room) => room === roomId)) {
@@ -52,12 +48,15 @@ const CustomerSupport = () => {
         }
         return prevRooms;
       });
-      setMessages([]);
     }
   }, [roomId]);
 
-  console.log(messages);
-  console.log(roomId);
+  useEffect(() => {
+    const roomMessages = messages.filter(
+      (message) => message.socketId === roomId
+    );
+    setRoomMsg(roomMessages);
+  }, [roomId, messages]);
 
   // add message to chat box and send
   const handleAddMessage = () => {
@@ -81,9 +80,6 @@ const CustomerSupport = () => {
       handleAddMessage();
     }
   };
-
-  //
-  const handleChangeRoom = (roomId) => {};
 
   const sliceMsg = (msg) => {
     if (msg.slice(0, 2) === "cl") {
@@ -122,7 +118,7 @@ const CustomerSupport = () => {
                     height: "100%",
                   }}
                 >
-                  {messages.map((message, index) => (
+                  {roomMsg.map((message, index) => (
                     <div key={index} className="row row-cols-3 px-3 py-1">
                       <div className="col-2 mb-1 text-end">
                         {sliceMsg(message.msg) ? (
