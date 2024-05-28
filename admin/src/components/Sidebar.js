@@ -20,6 +20,30 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Fetch user data in session
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/getSession", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const resData = await response.json();
+          dispatch(onLogin(resData));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [dispatch, isLoggedIn]);
+
+  // Logout
   const handleLogout = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/signOut", {
@@ -52,51 +76,53 @@ const Sidebar = () => {
             <li className="nav-item mt-3">
               <p className="text-secondary">Main</p>
             </li>
-
-            <li
-              className="nav-item"
-              onClick={() => {
-                navigate("/");
-              }}
-            >
-              <button className="nav-link px-0">
-                <FontAwesomeIcon icon={faTableColumns} />{" "}
-                <span className="ms-1 d-none d-sm-inline text-secondary">
-                  Dashboard
-                </span>
-              </button>
-            </li>
-
-            <>
+            {loginUser.role === "admin" && (
               <li
                 className="nav-item"
                 onClick={() => {
-                  navigate("/register");
+                  navigate("/");
                 }}
               >
                 <button className="nav-link px-0">
-                  <FontAwesomeIcon icon={faRegistered} />{" "}
+                  <FontAwesomeIcon icon={faTableColumns} />{" "}
                   <span className="ms-1 d-none d-sm-inline text-secondary">
-                    Register
+                    Dashboard
                   </span>
                 </button>
               </li>
-              <li
-                className="nav-item"
-                onClick={() => {
-                  navigate("/login");
-                }}
-              >
-                <button className="nav-link px-0">
-                  <FontAwesomeIcon icon={faSignIn} />{" "}
-                  <span className="ms-1 d-none d-sm-inline text-secondary">
-                    Login
-                  </span>
-                </button>
-              </li>
-            </>
+            )}
+            {!isLoggedIn && (
+              <>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/register");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faRegistered} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Register
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="nav-item"
+                  onClick={() => {
+                    navigate("/login");
+                  }}
+                >
+                  <button className="nav-link px-0">
+                    <FontAwesomeIcon icon={faSignIn} />{" "}
+                    <span className="ms-1 d-none d-sm-inline text-secondary">
+                      Login
+                    </span>
+                  </button>
+                </li>
+              </>
+            )}
 
-            {
+            {loginUser.role === "admin" && (
               <>
                 <li className="nav-item mt-3">
                   <p className="text-secondary ">List</p>
@@ -157,7 +183,11 @@ const Sidebar = () => {
                     </span>
                   </button>
                 </li>
+              </>
+            )}
 
+            {(loginUser.role === "admin" || loginUser.role === "supporter") && (
+              <>
                 <li className="nav-item mt-3">
                   <p className="text-secondary ">Support</p>
                 </li>
@@ -174,20 +204,19 @@ const Sidebar = () => {
                     </span>
                   </button>
                 </li>
-
-                <li className="nav-item mt-3">
-                  <p className="text-secondary ">User</p>
-                </li>
-                <li className="nav-item" onClick={handleLogout}>
-                  <button href="#" className="nav-link px-0">
-                    <FontAwesomeIcon icon={faRightFromBracket} />{" "}
-                    <span className="ms-1 d-none d-sm-inline text-secondary">
-                      Logout
-                    </span>
-                  </button>
-                </li>
               </>
-            }
+            )}
+            <li className="nav-item mt-3">
+              <p className="text-secondary ">User</p>
+            </li>
+            <li className="nav-item" onClick={handleLogout}>
+              <button href="#" className="nav-link px-0">
+                <FontAwesomeIcon icon={faRightFromBracket} />{" "}
+                <span className="ms-1 d-none d-sm-inline text-secondary">
+                  Logout
+                </span>
+              </button>
+            </li>
           </ul>
           <hr />
           <div className="dropdown pb-4">

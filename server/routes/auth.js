@@ -1,5 +1,6 @@
 const express = require("express");
 const authController = require("../controller/auth");
+const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -10,7 +11,11 @@ router.post("/signUp", authController.postSignUp);
 router.post("/signIn", authController.postSignIn);
 
 // Logout to the website
-router.post("/signOut", authController.postSignOut);
+router.post(
+  "/signOut",
+  authMiddleware.isAuthenticated,
+  authController.postSignOut
+);
 
 // Get session information
 router.get("/getSession", authController.getSessionInfo);

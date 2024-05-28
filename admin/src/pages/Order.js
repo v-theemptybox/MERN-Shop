@@ -13,6 +13,7 @@ const Order = () => {
         `http://localhost:5000/admin/getOrders?page=${page}`,
         {
           method: "GET",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

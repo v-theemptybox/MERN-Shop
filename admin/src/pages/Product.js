@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const Product = () => {
   const [products, setProducts] = useState([]);
@@ -8,12 +9,15 @@ const Product = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [updateView, setUpdateView] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
         `http://localhost:5000/admin/getProducts?page=${page}`,
         {
           method: "GET",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -38,6 +42,7 @@ const Product = () => {
         "http://localhost:5000/admin/deleteProduct",
         {
           method: "DELETE",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -88,7 +93,12 @@ const Product = () => {
                 <td>{product.category}</td>
 
                 <td>
-                  <button className="rounded border-0 bg-success bg-opacity-75 text-white p-2 me-2">
+                  <button
+                    className="rounded border-0 bg-success bg-opacity-75 text-white p-2 me-2"
+                    onClick={() => {
+                      navigate(`${product._id}`);
+                    }}
+                  >
                     Update
                   </button>
                   <button

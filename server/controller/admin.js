@@ -120,7 +120,7 @@ exports.getProducts = async (req, res, next) => {
       res.status(404).json({ message: "Product not found" });
     }
 
-    const sortedProducts = products.sort((a, b) => b.createdAt - a.createdAt);
+    const sortedProducts = products.sort((a, b) => b.updatedAt - a.updatedAt);
     const results = paging(sortedProducts, PAGE_SIZE, page);
 
     res.status(200).json({
@@ -185,12 +185,52 @@ exports.postProduct = async (req, res, next) => {
   }
 };
 
+// Get a product
+exports.getProduct = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.productId);
+    if (!product) {
+      res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Update a product
+exports.putProduct = async (req, res, next) => {
+  try {
+    const productId = req.body.productId;
+    const updateFields = req.body;
+
+    // check if product and updateFields existence
+    if (!productId || Object.keys(updatedFields).length === 0) {
+      res.status(400).json({ message: "Invalid request data" });
+    }
+
+    // update product
+    const product = await Product.findByIdAndUpdate(productId, updateFields, {
+      new: true,
+    });
+
+    // check if product not fond
+    if (!product) {
+      res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ message: "Updated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Delete a product
 exports.deleteProduct = async (req, res, next) => {
   try {
     const productId = req.body.productId;
-    console.log(productId);
-    console.log(req.body);
+
     // get delete product by id
     const product = await Product.findById(productId);
 

@@ -49,7 +49,8 @@ exports.postSignIn = async (req, res, next) => {
     req.session.chatLog = [];
     req.session.isLoggedIn = true;
 
-    req.session.save((err) => console.log(err));
+    req.session.save();
+
     res.status(200).json(req.session.user);
   } catch (error) {
     console.error("Error in sign in:", error);

@@ -11,7 +11,13 @@ const InfoBoard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/admin/getReports");
+        const response = await fetch("http://localhost:5000/admin/getReports", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const resData = await response.json();
         if (response.ok) {
           setReports(resData);

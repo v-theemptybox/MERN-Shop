@@ -35,6 +35,10 @@ function App() {
           element: <Product />,
         },
         {
+          path: "products/:productId",
+          element: <UpdateProduct />,
+        },
+        {
           path: "create-product",
           element: <UpdateProduct />,
         },

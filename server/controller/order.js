@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -9,7 +10,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: "stars.nhiepphong@gmail.com",
-    pass: "fiwm hybe cvco hyfa",
+    pass: process.env.MAIL_KEY,
   },
 });
 

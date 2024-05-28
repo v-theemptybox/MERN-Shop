@@ -88,7 +88,7 @@ const Register = () => {
       <div className="mt-5 border rounded shadow text-start pt-4 px-3 d-flex justify-content-center">
         <form className="form-control w-25 mb-3">
           <h2>Register</h2>
-          <label className="form-label mt-2">Username:</label>
+          <label className="form-label mt-2">Email:</label>
           <input
             className="form-control"
             type="email"
@@ -129,7 +129,7 @@ const Register = () => {
             max={10}
             required
           />
-          <label className="form-label mt-2">Email:</label>
+          <label className="form-label mt-2">Address:</label>
           <input
             className="form-control"
             type="text"

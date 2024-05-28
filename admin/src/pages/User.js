@@ -13,6 +13,7 @@ const User = () => {
         `http://localhost:5000/admin/getUsers?page=${page}`,
         {
           method: "GET",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

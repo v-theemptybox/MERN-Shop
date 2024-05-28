@@ -8,6 +8,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       const response = await fetch("http://localhost:5000/admin/getOrders", {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

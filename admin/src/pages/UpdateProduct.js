@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateProduct = () => {
   const [name, setName] = useState("");
@@ -10,6 +11,41 @@ const UpdateProduct = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [message, setMessage] = useState("");
 
+  const navigate = useNavigate();
+  const { productId } = useParams();
+
+  console.log(productId);
+
+  // if productId exist then update product
+  useEffect(() => {
+    if (productId) {
+      // fetch room info from API when component load
+      const fetchRoom = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/admin/getProduct/${productId}`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+          const resData = await response.json();
+          console.log(resData);
+          setName(resData.name);
+          setPrice(resData.price);
+          setShortDesc(resData.short_desc);
+          setLongDesc(resData.long_desc);
+          setCategory(resData.category);
+          setStock(resData.stock || 0);
+        } catch (error) {
+          console.error("Error fetching product data:", error);
+        }
+      };
+      fetchRoom();
+    }
+  }, [productId]);
+
+  // show alert message
   const showAlertMessage = (msg) => {
     setMessage(msg);
     setTimeout(() => {
@@ -20,12 +56,13 @@ const UpdateProduct = () => {
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
 
-    if (files.length > 4) showAlertMessage("You can only upload up to 4 files");
+    if (files.length !== 4) showAlertMessage("You must upload 4 images");
     else {
       setSelectedFiles(files);
     }
   };
 
+  // validate form data
   const validateForm = () => {
     if (!name || !category || !shortDesc || !longDesc || !stock) {
       showAlertMessage("Please fill in all value!");
@@ -56,9 +93,14 @@ const UpdateProduct = () => {
           "http://localhost:5000/admin/postProduct",
           {
             method: "POST",
+            credentials: "include",
             body: formData,
           }
         );
+
+        if (response.ok) {
+          navigate("/products");
+        }
 
         // const resData = await response.json();
         // console.log(resData.product);

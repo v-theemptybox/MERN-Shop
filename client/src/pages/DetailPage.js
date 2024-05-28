@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretLeft,
+  faCaretRight,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import styles from "./DetailPage.module.css";
@@ -8,9 +12,17 @@ import { useDispatch, useSelector } from "react-redux";
 const DetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [amount, setAmount] = useState(1);
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+
+  const showAlertMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  };
 
   // use useLocation() to get state pass through <Link> in react-router
   const location = useLocation();
@@ -68,7 +80,12 @@ const DetailPage = () => {
       });
 
       const resData = await response.json();
-      console.log(resData);
+
+      if (response.ok) {
+        console.log(resData);
+      } else {
+        showAlertMessage(resData.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -76,6 +93,13 @@ const DetailPage = () => {
 
   return (
     <div className="container fst-italic fw-light">
+      {message && (
+        <div className="position-absolute start-0 border border-1 border-primary p-2 text-primary">
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp;
+          {message}
+        </div>
+      )}
       <div className="row mt-5">
         <div className="col-1">
           <img src={product.img1} alt={product.name} className="w-100 mt-2" />
@@ -119,11 +143,11 @@ const DetailPage = () => {
             <button
               className="btn bg-black text-light rounded-0 fst-italic"
               onClick={() => {
-                if (isLoggedIn) {
-                  handleAddToCart();
-                } else {
-                  navigate("/login");
-                }
+                // if (isLoggedIn) {
+                handleAddToCart();
+                // } else {
+                //   navigate("/login");
+                // }
               }}
             >
               Add to cart
