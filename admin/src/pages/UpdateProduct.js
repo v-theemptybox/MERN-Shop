@@ -14,8 +14,6 @@ const UpdateProduct = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
 
-  console.log(productId);
-
   // if productId exist then update product
   useEffect(() => {
     if (productId) {
@@ -53,6 +51,7 @@ const UpdateProduct = () => {
     }, 3000);
   };
 
+  // validate image files
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
 
@@ -85,10 +84,6 @@ const UpdateProduct = () => {
           formData.append("uploadedImages", file);
         });
 
-        // Log FormData values
-        // for (let [key, value] of formData.entries()) {
-        //   console.log(`${key}: ${value}`);
-        // }
         const response = await fetch(
           "http://localhost:5000/admin/postProduct",
           {
@@ -103,6 +98,43 @@ const UpdateProduct = () => {
         }
 
         // const resData = await response.json();
+        // console.log(resData.product);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    try {
+      if (validateForm()) {
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("price", price);
+        formData.append("shortDesc", shortDesc);
+        formData.append("longDesc", longDesc);
+        formData.append("category", category);
+        formData.append("stock", stock);
+        selectedFiles.forEach((file) => {
+          formData.append("uploadedImages", file);
+        });
+
+        const response = await fetch(
+          `http://localhost:5000/admin/putProduct/${productId}`,
+          {
+            method: "PUT",
+            credentials: "include",
+            body: formData,
+          }
+        );
+
+        const resData = await response.json();
+        if (response.ok) {
+          navigate("/products");
+        } else {
+          showAlertMessage(resData.message);
+        }
+
         // console.log(resData.product);
       }
     } catch (error) {
@@ -214,9 +246,9 @@ const UpdateProduct = () => {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={handleCreateProduct}
+            onClick={productId ? handleUpdateProduct : handleCreateProduct}
           >
-            Submit
+            {productId ? "Update" : "Submit"}
           </button>
         </form>
       </div>

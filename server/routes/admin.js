@@ -6,7 +6,7 @@ const authMiddleware = require("../middleware/auth");
 const router = express.Router();
 
 // admin auth middleware
-router.use(authMiddleware.checkRole("admin"));
+// router.use(authMiddleware.checkRole("admin"));
 
 // Get users
 router.get("/getUsers", adminController.getUsers);

@@ -8,8 +8,17 @@ const Product = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [updateView, setUpdateView] = useState(false);
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+
+  // show alert message
+  const showAlertMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +46,6 @@ const Product = () => {
 
   const handleDeleteProduct = async (productId) => {
     try {
-      console.log(productId);
       const response = await fetch(
         "http://localhost:5000/admin/deleteProduct",
         {
@@ -53,8 +61,11 @@ const Product = () => {
       );
 
       const resData = await response.json();
-      console.log(resData.message);
-      setUpdateView((prevState) => !prevState);
+      if (response.ok) {
+        setUpdateView((prevState) => !prevState);
+      } else {
+        showAlertMessage(resData.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -62,6 +73,11 @@ const Product = () => {
 
   return (
     <>
+      {message && (
+        <div className="alert alert-primary position-absolute start-50">
+          {message}
+        </div>
+      )}
       <div className="mt-5 border rounded shadow text-start pt-4 px-3">
         <div className="mb-4">
           <h3>Products</h3>

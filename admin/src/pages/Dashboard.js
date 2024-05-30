@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import InfoBoard from "../components/InfoBoard";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [orders, setOrders] = useState([]);
+
+  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,12 +26,15 @@ const Dashboard = () => {
         console.log(resData.message);
       }
     };
+    // if you are not logged in, navigate to the login page
+    if (!isLoggedIn) {
+      navigate("/login");
+    }
     fetchData();
-  }, []);
+  }, [isLoggedIn, navigate]);
   return (
     <div>
       <InfoBoard />
-
       <div className="mt-5 border rounded shadow text-start pt-4 px-3">
         <div className="mb-4">
           <h3>History</h3>

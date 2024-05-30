@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
   const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
   const [cartId, setCartId] = useState("");
   const [cartProducts, setCartProducts] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +53,9 @@ const CheckoutPage = () => {
         });
 
         const resData = await response.json();
+        if (response.ok) {
+          navigate("/order");
+        }
         console.log(resData.message);
       }
     } catch (error) {

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const Cart = require("../models/Cart");
 
 const fileHelper = require("../utils/filerHelper");
 const paging = require("../utils/paging");
@@ -149,14 +150,12 @@ exports.postProduct = async (req, res, next) => {
       !stock ||
       !files
     ) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     // uploaded files must be 4 images
     if (files.length !== 4) {
-      return res
-        .status(400)
-        .json({ message: "Exactly 4 images are required." });
+      return res.status(400).json({ message: "Exactly 4 images are required" });
     }
 
     const newProduct = new Product({
@@ -202,24 +201,45 @@ exports.getProduct = async (req, res, next) => {
 // Update a product
 exports.putProduct = async (req, res, next) => {
   try {
-    const productId = req.body.productId;
-    const updateFields = req.body;
+    const productId = req.params.productId;
+    const { name, price, shortDesc, longDesc, category, stock } = req.body;
+    const files = req.files;
 
-    // check if product and updateFields existence
-    if (!productId || Object.keys(updatedFields).length === 0) {
-      res.status(400).json({ message: "Invalid request data" });
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required." });
     }
 
-    // update product
+    // validate the request fields
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (price) updateFields.price = price;
+    if (shortDesc) updateFields.short_desc = shortDesc;
+    if (longDesc) updateFields.long_desc = longDesc;
+    if (category) updateFields.category = category;
+    if (stock) updateFields.stock = stock;
+
+    if (files && files.length !== 4) {
+      return res.status(400).json({ message: "Exactly 4 images are required" });
+    }
+
+    // if files are provided, update the image fields
+    if (files) {
+      files.forEach((file, index) => {
+        updateFields[
+          `img${index + 1}`
+        ] = `http://localhost:5000/uploads/${file.filename}`;
+      });
+    }
+
     const product = await Product.findByIdAndUpdate(productId, updateFields, {
       new: true,
     });
 
-    // check if product not fond
     if (!product) {
-      res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
-    res.status(200).json({ message: "Updated" });
+
+    res.status(200).json({ message: "Product updated successfully", product });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -231,11 +251,30 @@ exports.deleteProduct = async (req, res, next) => {
   try {
     const productId = req.body.productId;
 
+    const carts = await Cart.find().populate("products");
+    const orders = await Order.find().populate("products");
+
     // get delete product by id
     const product = await Product.findById(productId);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
+    }
+
+    const isProductInCart = carts.some((cart) =>
+      cart.products.some((p) => p.product.toString() === productId)
+    );
+
+    const isProductInOrder = orders.some((order) =>
+      order.products.some((p) => p.product.toString() === productId)
+    );
+
+    if (isProductInCart || isProductInOrder) {
+      return res
+        .status(400)
+        .json({
+          message: "Product is in a cart or an order. Cannot be deleted",
+        });
     }
 
     // get images path to delete; if there is any falsy value, that falsy value will be excluded
@@ -245,8 +284,6 @@ exports.deleteProduct = async (req, res, next) => {
       product.img3,
       product.img4,
     ].filter(Boolean);
-
-    console.log(images);
 
     // delete product data in db
     await Product.deleteOne({ _id: productId });

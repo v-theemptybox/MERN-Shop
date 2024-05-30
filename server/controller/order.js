@@ -1,7 +1,11 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const nodemailer = require("nodemailer");
+
 require("dotenv").config();
+
+const paging = require("../utils/paging");
+const PAGE_SIZE = 5;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -10,7 +14,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: "stars.nhiepphong@gmail.com",
-    pass: process.env.MAIL_KEY,
+    pass: "fiwm hybe cvco hyfa",
   },
 });
 
@@ -83,38 +87,44 @@ exports.postOrder = async (req, res, next) => {
       )
       .join("");
 
-    transporter.sendMail({
-      from: { name: "vTechShop", address: "stars.nhiepphong@gmail.com" },
-      to: userOrder.user.email,
-      subject: "Confirm order",
-      html: `<h1>Xin chào ${userOrder.user.fullName}</h1>
-      <p>Phone: ${userOrder.user.phone}</p>
-      <p>Address: ${userOrder.user.address}</p>
-      <table>
-        <tbody style="border:1px solid black;text-align:center;">
-          <tr>
-            <td style="border:1px solid black;">
-              Tên Sản Phẩm
-            </td>
-            <td style="border:1px solid black;">
-              Hình ảnh
-            </td>
-            <td style="border:1px solid black;">
-              Giá
-            </td>
-            <td style="border:1px solid black;">
-              Số Lượng
-            </td>
-            <td style="border:1px solid black;">
-              Thành tiền
-            </td>
-          </tr>
-          ${productsHtml}
-        </tbody>
-      </table>
-      <h3>Tổng thanh toán: ${order.totalPrice.toLocaleString("vi-VN")} VND</h3>
-      <h3>Cảm ơn bạn!</h3>`,
-    });
+    try {
+      await transporter.sendMail({
+        from: { name: "vTechShop", address: "stars.nhiepphong@gmail.com" },
+        to: userOrder.user.email,
+        subject: "Confirm order",
+        html: `<h1>Xin chào ${userOrder.user.fullName}</h1>
+          <p>Phone: ${userOrder.user.phone}</p>
+          <p>Address: ${userOrder.user.address}</p>
+          <table>
+            <tbody style="border:1px solid black;text-align:center;">
+              <tr>
+                <td style="border:1px solid black;">
+                  Tên Sản Phẩm
+                </td>
+                <td style="border:1px solid black;">
+                  Hình ảnh
+                </td>
+                <td style="border:1px solid black;">
+                  Giá
+                </td>
+                <td style="border:1px solid black;">
+                  Số Lượng
+                </td>
+                <td style="border:1px solid black;">
+                  Thành tiền
+                </td>
+              </tr>
+              ${productsHtml}
+            </tbody>
+          </table>
+          <h3>Tổng thanh toán: ${order.totalPrice.toLocaleString(
+            "vi-VN"
+          )} VND</h3>
+          <h3>Cảm ơn bạn!</h3>`,
+      });
+    } catch (error) {
+      console.log("Error sending email:", error);
+    }
 
     return res
       .status(201)
