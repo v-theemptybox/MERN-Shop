@@ -212,11 +212,11 @@ exports.putProduct = async (req, res, next) => {
     // validate the request fields
     const updateFields = {};
     if (name) updateFields.name = name;
-    if (price) updateFields.price = price;
+    if (price && price > 0) updateFields.price = price;
     if (shortDesc) updateFields.short_desc = shortDesc;
     if (longDesc) updateFields.long_desc = longDesc;
     if (category) updateFields.category = category;
-    if (stock) updateFields.stock = stock;
+    if (stock && stock > 0) updateFields.stock = stock;
 
     if (files && files.length !== 4) {
       return res.status(400).json({ message: "Exactly 4 images are required" });
@@ -270,11 +270,9 @@ exports.deleteProduct = async (req, res, next) => {
     );
 
     if (isProductInCart || isProductInOrder) {
-      return res
-        .status(400)
-        .json({
-          message: "Product is in a cart or an order. Cannot be deleted",
-        });
+      return res.status(400).json({
+        message: "Product is in a cart or an order. Cannot be deleted",
+      });
     }
 
     // get images path to delete; if there is any falsy value, that falsy value will be excluded

@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
+const Product = require("../models/Product");
 const nodemailer = require("nodemailer");
 
 require("dotenv").config();
@@ -42,7 +43,7 @@ exports.postOrder = async (req, res, next) => {
   try {
     const { cartId, status, totalPrice } = req.body;
 
-    const cart = await Cart.findById(cartId);
+    const cart = await Cart.findById(cartId).populate("products.product");
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -50,6 +51,19 @@ exports.postOrder = async (req, res, next) => {
 
     if (!cart.products || cart.products.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    // Check stock availability and update stock
+    for (let p of cart.products) {
+      const product = await Product.findById(p.product);
+      if (product.stock < p.quantity) {
+        return res
+          .status(400)
+          .json({ message: `Out of stock for product: ${product.name}` });
+      }
+      // Update stock
+      product.stock -= p.quantity;
+      await product.save();
     }
 
     // create an order
@@ -71,19 +85,19 @@ exports.postOrder = async (req, res, next) => {
     const productsHtml = order.products
       .map(
         (item) => `
-      <tr>
-        <td style="border:1px solid black;">${item.product.name}</td>
-        <td style="border:1px solid black;"><img src="${
-          item.product.img1
-        }" alt="${item.product.name}" width="50" /></td>
-        <td style="border:1px solid black;">${(+item.product
-          .price).toLocaleString("vi-VN")} VND</td>
-        <td style="border:1px solid black;">${item.quantity}</td>
-        <td style="border:1px solid black;">${item.totalProduct.toLocaleString(
-          "vi-VN"
-        )} VND</td>
-      </tr>
-    `
+          <tr>
+            <td style="border:1px solid black;">${item.product.name}</td>
+            <td style="border:1px solid black;"><img src="${
+              item.product.img1
+            }" alt="${item.product.name}" width="50" /></td>
+            <td style="border:1px solid black;">${(+item.product
+              .price).toLocaleString("vi-VN")} VND</td>
+            <td style="border:1px solid black;">${item.quantity}</td>
+            <td style="border:1px solid black;">${item.totalProduct.toLocaleString(
+              "vi-VN"
+            )} VND</td>
+          </tr>
+        `
       )
       .join("");
 
@@ -93,34 +107,34 @@ exports.postOrder = async (req, res, next) => {
         to: userOrder.user.email,
         subject: "Confirm order",
         html: `<h1>Xin chào ${userOrder.user.fullName}</h1>
-          <p>Phone: ${userOrder.user.phone}</p>
-          <p>Address: ${userOrder.user.address}</p>
-          <table>
-            <tbody style="border:1px solid black;text-align:center;">
-              <tr>
-                <td style="border:1px solid black;">
-                  Tên Sản Phẩm
-                </td>
-                <td style="border:1px solid black;">
-                  Hình ảnh
-                </td>
-                <td style="border:1px solid black;">
-                  Giá
-                </td>
-                <td style="border:1px solid black;">
-                  Số Lượng
-                </td>
-                <td style="border:1px solid black;">
-                  Thành tiền
-                </td>
-              </tr>
-              ${productsHtml}
-            </tbody>
-          </table>
-          <h3>Tổng thanh toán: ${order.totalPrice.toLocaleString(
-            "vi-VN"
-          )} VND</h3>
-          <h3>Cảm ơn bạn!</h3>`,
+              <p>Phone: ${userOrder.user.phone}</p>
+              <p>Address: ${userOrder.user.address}</p>
+              <table>
+                <tbody style="border:1px solid black;text-align:center;">
+                  <tr>
+                    <td style="border:1px solid black;">
+                      Tên Sản Phẩm
+                    </td>
+                    <td style="border:1px solid black;">
+                      Hình ảnh
+                    </td>
+                    <td style="border:1px solid black;">
+                      Giá
+                    </td>
+                    <td style="border:1px solid black;">
+                      Số Lượng
+                    </td>
+                    <td style="border:1px solid black;">
+                      Thành tiền
+                    </td>
+                  </tr>
+                  ${productsHtml}
+                </tbody>
+              </table>
+              <h3>Tổng thanh toán: ${order.totalPrice.toLocaleString(
+                "vi-VN"
+              )} VND</h3>
+              <h3>Cảm ơn bạn!</h3>`,
       });
     } catch (error) {
       console.log("Error sending email:", error);

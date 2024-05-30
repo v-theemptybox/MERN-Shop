@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CheckoutPage = () => {
   const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
   const [cartId, setCartId] = useState("");
   const [cartProducts, setCartProducts] = useState([]);
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+
+  const showAlertMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,7 +66,7 @@ const CheckoutPage = () => {
         if (response.ok) {
           navigate("/order");
         }
-        console.log(resData.message);
+        showAlertMessage(resData.message);
       }
     } catch (error) {
       console.error("Error placing order:", error);
@@ -65,6 +75,13 @@ const CheckoutPage = () => {
 
   return (
     <div className="container">
+      {message && (
+        <div className="position-absolute start-50 top-50 border border-1 border-warning p-2 text-warning">
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp;
+          {message}
+        </div>
+      )}
       <div className="d-flex justify-content-between bg-secondary bg-opacity-10 align-items-center h-100 py-5">
         <h1 className="mb-0 mx-5 py-5 fw-normal fst-italic">CHECKOUT</h1>
         <p className="mb-0 mx-5 py-5 fst-italic">

@@ -8,14 +8,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import styles from "./DetailPage.module.css";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 const DetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [amount, setAmount] = useState(1);
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
-  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+  const { loginUser } = useSelector((state) => state.auth);
 
   const showAlertMessage = (msg) => {
     setMessage(msg);
@@ -47,14 +47,16 @@ const DetailPage = () => {
   }, [fetchData]);
 
   // change quantity of product
-  const increaseAmount = () => {
-    setAmount(amount + 1);
+  const increaseAmount = (productStock) => {
+    if (amount < productStock) {
+      setAmount(amount + 1);
+    } else showAlertMessage("Out of stock");
   };
   const decreaseAmount = () => {
     if (amount > 1) {
       setAmount(amount - 1);
     } else {
-      alert("Quantity must be greater than 0!");
+      showAlertMessage("Quantity must be greater than 0!");
     }
   };
 
@@ -121,7 +123,7 @@ const DetailPage = () => {
           <div className="d-flex">
             <div className="border d-flex justify-content-between align-items-center">
               <label htmlFor="quantityProd" className="ps-2">
-                QUANTITY
+                QUANTITY (STOCK: {product.stock})
               </label>
               <div className="w-50 text-end">
                 <button className="btn" onClick={decreaseAmount}>
@@ -135,22 +137,27 @@ const DetailPage = () => {
                   onChange={(e) => setAmount(+e.target.value)}
                   type="number"
                 />
-                <button className="btn" onClick={increaseAmount}>
+                <button
+                  className="btn"
+                  onClick={() => {
+                    increaseAmount(product.stock);
+                  }}
+                >
                   <FontAwesomeIcon icon={faCaretRight} />
                 </button>
               </div>
             </div>
+
             <button
+              disabled={product.stock > 0 ? false : true}
               className="btn bg-black text-light rounded-0 fst-italic"
               onClick={() => {
-                // if (isLoggedIn) {
-                handleAddToCart();
-                // } else {
-                //   navigate("/login");
-                // }
+                if (product.stock > 0) {
+                  handleAddToCart();
+                }
               }}
             >
-              Add to cart
+              {product.stock > 0 ? "Add to cart" : "Out of stock"}
             </button>
           </div>
         </div>
