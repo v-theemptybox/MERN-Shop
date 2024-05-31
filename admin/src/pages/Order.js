@@ -10,7 +10,7 @@ const Order = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `http://localhost:5000/admin/getOrders?page=${page}`,
+        `https://vtechshop-be.onrender.com/admin/getOrders?page=${page}`,
         {
           method: "GET",
           credentials: "include",

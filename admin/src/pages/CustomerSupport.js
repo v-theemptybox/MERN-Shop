@@ -22,7 +22,7 @@ const CustomerSupport = () => {
   useEffect(() => {
     try {
       if (!socketRef.current) {
-        socketRef.current = openSocket("http://localhost:5000");
+        socketRef.current = openSocket("https://vtechshop-be.onrender.com");
 
         socketRef.current.on("getRoomId", (data) => {
           setRoomId(data);

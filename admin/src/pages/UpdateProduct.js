@@ -21,7 +21,7 @@ const UpdateProduct = () => {
       const fetchRoom = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/admin/getProduct/${productId}`,
+            `https://vtechshop-be.onrender.com/admin/getProduct/${productId}`,
             {
               method: "GET",
               credentials: "include",
@@ -89,7 +89,7 @@ const UpdateProduct = () => {
         });
 
         const response = await fetch(
-          "http://localhost:5000/admin/postProduct",
+          "https://vtechshop-be.onrender.com/admin/postProduct",
           {
             method: "POST",
             credentials: "include",
@@ -124,7 +124,7 @@ const UpdateProduct = () => {
         });
 
         const response = await fetch(
-          `http://localhost:5000/admin/putProduct/${productId}`,
+          `https://vtechshop-be.onrender.com/admin/putProduct/${productId}`,
           {
             method: "PUT",
             credentials: "include",

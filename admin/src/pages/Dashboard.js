@@ -6,18 +6,21 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const [orders, setOrders] = useState([]);
 
-  const { isLoggedIn, loginUser } = useSelector((state) => state.auth);
+  const { isLoggedIn } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:5000/admin/getOrders", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "https://vtechshop-be.onrender.com/admin/getOrders",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const resData = await response.json();
       if (response.ok) {

@@ -10,7 +10,7 @@ const User = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `http://localhost:5000/admin/getUsers?page=${page}`,
+        `https://vtechshop-be.onrender.com/admin/getUsers?page=${page}`,
         {
           method: "GET",
           credentials: "include",

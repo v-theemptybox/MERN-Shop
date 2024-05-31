@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,13 +24,16 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/getSession", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "https://vtechshop-be.onrender.com/api/getSession",
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.ok) {
           const resData = await response.json();
@@ -46,10 +49,13 @@ const Sidebar = () => {
   // Logout
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/signOut", {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://vtechshop-be.onrender.com/api/signOut",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
       const resData = await response.text();
       console.log(resData);
       dispatch(onLogout());

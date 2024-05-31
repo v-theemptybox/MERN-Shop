@@ -36,22 +36,34 @@ const Login = () => {
   const handleSignIn = async (e) => {
     try {
       if (validateInput()) {
-        const response = await fetch("http://localhost:5000/api/signIn", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        });
+        const response = await fetch(
+          "https://vtechshop-be.onrender.com/api/signIn",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          }
+        );
 
         const resData = await response.json();
         if (response.ok) {
-          dispatch(onLogin(resData));
-          navigate("/");
+          // if role is note admin or sp then destroy session
+          if (resData.role === "admin" || resData.role === "supporter") {
+            dispatch(onLogin(resData));
+            navigate("/");
+          } else {
+            await fetch("https://vtechshop-be.onrender.com/api/signOut", {
+              method: "POST",
+              credentials: "include",
+            });
+            showAlertMessage("Please sign in with admin or supporter account");
+          }
         } else {
           showAlertMessage(resData.message);
         }
@@ -61,41 +73,48 @@ const Login = () => {
     }
   };
   return (
-    <div className="mt-5 border rounded shadow text-start pt-4 px-3 d-flex justify-content-center">
-      <form className="form-control w-25 mb-3">
-        <h2>Login</h2>
-        <div className="my-2">
-          <label className="form-label">Username: </label>
-          <input
-            className="form-control"
-            type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-          />
+    <>
+      {message && (
+        <div className="alert alert-primary position-absolute start-50">
+          {message}
         </div>
-        <div className="my-2">
-          <label className="form-label">Password: </label>
-          <input
-            className="form-control"
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-          />
-        </div>
+      )}
+      <div className="mt-5 border rounded shadow text-start pt-4 px-3 d-flex justify-content-center">
+        <form className="form-control w-25 mb-3">
+          <h2>Login</h2>
+          <div className="my-2">
+            <label className="form-label">Username: </label>
+            <input
+              className="form-control"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+          </div>
+          <div className="my-2">
+            <label className="form-label">Password: </label>
+            <input
+              className="form-control"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+          </div>
 
-        <button
-          className="btn btn-primary mb-3"
-          type="button"
-          onClick={handleSignIn}
-        >
-          Login
-        </button>
-      </form>
-    </div>
+          <button
+            className="btn btn-primary mb-3"
+            type="button"
+            onClick={handleSignIn}
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

@@ -23,7 +23,7 @@ const Product = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `http://localhost:5000/admin/getProducts?page=${page}`,
+        `https://vtechshop-be.onrender.com/admin/getProducts?page=${page}`,
         {
           method: "GET",
           credentials: "include",
@@ -47,7 +47,7 @@ const Product = () => {
   const handleDeleteProduct = async (productId) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/admin/deleteProduct",
+        "https://vtechshop-be.onrender.com/admin/deleteProduct",
         {
           method: "DELETE",
           credentials: "include",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
@@ -40,21 +40,24 @@ const Register = () => {
     if (validateInput()) {
       try {
         if (validateInput()) {
-          const response = await fetch("http://localhost:5000/api/signUp", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-              fullName,
-              phone,
-              address,
-              role: "admin",
-            }),
-          });
+          const response = await fetch(
+            "https://vtechshop-be.onrender.com/api/signUp",
+            {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email,
+                password,
+                fullName,
+                phone,
+                address,
+                role: "admin",
+              }),
+            }
+          );
 
           const resData = await response.json();
           if (response.ok) {
