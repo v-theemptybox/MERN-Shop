@@ -4,6 +4,8 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 
+require("dotenv").config();
+
 const fileHelper = require("../utils/filerHelper");
 const paging = require("../utils/paging");
 const PAGE_SIZE = 5;
@@ -170,7 +172,7 @@ exports.postProduct = async (req, res, next) => {
     files.forEach((file, index) => {
       newProduct[
         `img${index + 1}`
-      ] = `http://localhost:5000/uploads/${file.filename}`;
+      ] = `${process.env.BASE_URL}/uploads/${file.filename}`;
     });
 
     await newProduct.save();
@@ -227,7 +229,7 @@ exports.putProduct = async (req, res, next) => {
       files.forEach((file, index) => {
         updateFields[
           `img${index + 1}`
-        ] = `http://localhost:5000/uploads/${file.filename}`;
+        ] = `${process.env.BASE_URL}/uploads/${file.filename}`;
       });
     }
 
@@ -287,7 +289,7 @@ exports.deleteProduct = async (req, res, next) => {
     await Product.deleteOne({ _id: productId });
 
     // delete images
-    const domain = "http://localhost:5000/";
+    const domain = `${process.env.BASE_URL}/`;
     images.forEach((imagePath) => {
       const relativePath = imagePath.replace(domain, "");
       fileHelper.deleteFile(relativePath);

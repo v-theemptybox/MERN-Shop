@@ -38,17 +38,20 @@ const LoginPage = () => {
   const handleSignIn = async (e) => {
     try {
       if (validateInput()) {
-        const response = await fetch("http://localhost:5000/api/signIn", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        });
+        const response = await fetch(
+          "https://vtechshop-be.onrender.com/api/signIn",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          }
+        );
 
         const resData = await response.json();
         if (response.ok) {

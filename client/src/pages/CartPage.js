@@ -25,7 +25,7 @@ const CartPage = () => {
     const fetchData = async () => {
       try {
         if (isLoggedIn) {
-          const response = await fetch("http://localhost:5000/api/getCart", {
+          const response = await fetch("https://vtechshop-be.onrender.com/api/getCart", {
             method: "GET",
             credentials: "include",
           });
@@ -44,7 +44,7 @@ const CartPage = () => {
     try {
       if (isLoggedIn) {
         const response = await fetch(
-          "http://localhost:5000/api/removeFromCart",
+          "https://vtechshop-be.onrender.com/api/removeFromCart",
           {
             method: "PUT",
             credentials: "include",
@@ -76,7 +76,7 @@ const CartPage = () => {
 
   const handleUpdateCart = async (productId, amount, productPrice) => {
     try {
-      const response = await fetch("http://localhost:5000/api/updateCart", {
+      const response = await fetch("https://vtechshop-be.onrender.com/api/updateCart", {
         method: "POST",
         credentials: "include",
         headers: {

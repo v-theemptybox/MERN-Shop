@@ -8,7 +8,7 @@ const ShopPage = () => {
   const [productList, setProductList] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
-  const url = "http://localhost:5000/api/getProducts";
+  const url = "https://vtechshop-be.onrender.com/api/getProducts";
 
   useEffect(() => {
     const fetchData = async () => {

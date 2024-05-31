@@ -15,7 +15,7 @@ const OrderPage = () => {
       try {
         if (isLoggedIn) {
           const response = await fetch(
-            "http://localhost:5000/api/getOrdersByUser",
+            "https://vtechshop-be.onrender.com/api/getOrdersByUser",
             {
               method: "GET",
               credentials: "include",

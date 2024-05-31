@@ -9,7 +9,7 @@ const OrderDetail = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/getOrder/${orderId}`,
+          `https://vtechshop-be.onrender.com/api/getOrder/${orderId}`,
           {
             method: "GET",
             credentials: "include",

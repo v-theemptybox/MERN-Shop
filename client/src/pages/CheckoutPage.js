@@ -23,10 +23,13 @@ const CheckoutPage = () => {
     const fetchData = async () => {
       try {
         if (isLoggedIn) {
-          const response = await fetch("http://localhost:5000/api/getCart", {
-            method: "GET",
-            credentials: "include",
-          });
+          const response = await fetch(
+            "https://vtechshop-be.onrender.com/api/getCart",
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
 
           const resData = await response.json();
           setCartId(resData._id);
@@ -49,18 +52,21 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     try {
       if (cartProducts && cartProducts.length > 0) {
-        const response = await fetch("http://localhost:5000/api/postOrder", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cartId,
-            status: "pending",
-            totalPrice: getTotalPrice(),
-          }),
-        });
+        const response = await fetch(
+          "https://vtechshop-be.onrender.com/api/postOrder",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              cartId,
+              status: "pending",
+              totalPrice: getTotalPrice(),
+            }),
+          }
+        );
 
         const resData = await response.json();
         if (response.ok) {

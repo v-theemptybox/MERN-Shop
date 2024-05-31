@@ -18,7 +18,7 @@ const ChatBox = () => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = openSocket("http://localhost:5000");
+      socketRef.current = openSocket("https://vtechshop-be.onrender.com");
 
       socketRef.current.emit("joinRoom", socketRef.current.id);
 

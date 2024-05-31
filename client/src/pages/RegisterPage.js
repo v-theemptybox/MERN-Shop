@@ -10,10 +10,7 @@ const RegisterPage = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
-  const [userCart, setUserCart] = useState([]);
-  const [userArr, setUserArr] = useState(
-    JSON.parse(localStorage.getItem("users")) || []
-  );
+
   const navigate = useNavigate();
 
   // validate form
@@ -43,21 +40,24 @@ const RegisterPage = () => {
     if (validateInput()) {
       try {
         if (validateInput()) {
-          const response = await fetch("http://localhost:5000/api/signUp", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-              fullName,
-              phone,
-              address,
-              role: "customer",
-            }),
-          });
+          const response = await fetch(
+            "https://vtechshop-be.onrender.com/api/signUp",
+            {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email,
+                password,
+                fullName,
+                phone,
+                address,
+                role: "customer",
+              }),
+            }
+          );
 
           const resData = await response.json();
           if (response.ok) {

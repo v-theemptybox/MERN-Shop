@@ -28,7 +28,7 @@ const DetailPage = () => {
   const location = useLocation();
   const product = location.state;
 
-  const url = "http://localhost:5000/api/getProducts";
+  const url = "https://vtechshop-be.onrender.com/api/getProducts";
 
   const fetchData = useCallback(async () => {
     const response = await fetch(url);
@@ -63,23 +63,26 @@ const DetailPage = () => {
   // add logic for button "Add to cart"
   const handleAddToCart = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/updateCart", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user: loginUser._id,
-          products: [
-            {
-              product: product._id,
-              quantity: amount,
-              totalProduct: amount * product.price,
-            },
-          ],
-        }),
-      });
+      const response = await fetch(
+        "https://vtechshop-be.onrender.com/api/updateCart",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: loginUser._id,
+            products: [
+              {
+                product: product._id,
+                quantity: amount,
+                totalProduct: amount * product.price,
+              },
+            ],
+          }),
+        }
+      );
 
       const resData = await response.json();
 
