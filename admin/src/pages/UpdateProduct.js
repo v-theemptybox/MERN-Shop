@@ -63,8 +63,12 @@ const UpdateProduct = () => {
 
   // validate form data
   const validateForm = () => {
-    if (!name || !category || !shortDesc || !longDesc || !stock) {
+    if (!name || !category || !shortDesc || !longDesc || !stock || !price) {
       showAlertMessage("Please fill in all value!");
+      return false;
+    }
+    if (stock < 0 || price < 0) {
+      showAlertMessage("Stock and Price must be greater than 0");
       return false;
     }
     return true;
